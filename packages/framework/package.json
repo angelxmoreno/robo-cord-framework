@@ -1,9 +1,23 @@
 {
     "name": "@robo-cord/framework",
-    "module": "src/index.ts",
     "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc"
+    },
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "^1.2.19"
     },
     "peerDependencies": {
         "typescript": "^5"

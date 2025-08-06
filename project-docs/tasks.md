@@ -7,10 +7,9 @@
 **Dependencies: None**  
 **Estimated Time: 3-4 hours**
 
-- [ ] Initialize root workspace with `bun init`
+- [X] Initialize root workspace with `bun init`
 - [ ] Create monorepo directory structure (`packages/framework/`, `apps/example-bot/`)
-- [ ] Set up root `package.json` with workspace configuration
-- [ ] Configure root `tsconfig.json` with path mapping for framework
+- [X] Set up root `package.json` with workspace configuration
 - [ ] Set up framework `package.json` as private GitHub registry package
 - [ ] Set up example-bot `package.json` with workspace dependency
 - [ ] Configure individual `tsconfig.json` files for framework and bot
