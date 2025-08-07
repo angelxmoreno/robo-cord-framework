@@ -4,6 +4,8 @@
     "type": "module",
     "private": true,
     "scripts": {
+        "start": "bun run src/index.ts",
+        "dev": "bun run --watch src/index.ts",
         "docker": "docker compose --env-file .env -f docker-compose.yml",
         "docker:restart": "bun run docker:stop && bun run docker:start",
         "docker:start": "bun run docker up -d",
@@ -12,7 +14,9 @@
         "docker:clean": "bun run docker down -v",
         "clean": "rm -rf node_modules bun.lock dist",
         "build": "tsc",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "test": "bun test",
+        "test:watch": "bun test --watch"
     },
     "dependencies": {
         "@robo-cord/framework": "*",

@@ -32,13 +32,13 @@
 **Estimated Time: 4-5 hours**
 
 - [X] Create `packages/framework/src/` directory structure
-- [ ] Create `packages/framework/src/utils/config.ts` with Zod schema
-- [ ] Implement `createConfig()` function for extensible configuration
-- [ ] Add environment-based defaults (dev vs prod)
-- [ ] Create type exports in `packages/framework/src/types/index.ts`
-- [ ] Test config validation with missing/invalid values
-- [ ] Create example bot config in `apps/example-bot/src/config.ts`
-- [ ] Set up framework exports in `packages/framework/src/index.ts`
+- [X] Create `packages/framework/src/utils/config.ts` with Zod schema
+- [X] Implement `createConfig()` function for extensible configuration
+- [X] Add environment-based defaults (dev vs prod)
+- [X] Create type exports in `packages/framework/src/types/index.ts`
+- [X] Test config validation with missing/invalid values
+- [X] Create example bot config in `apps/example-bot/src/config.ts`
+- [X] Set up framework exports in `packages/framework/src/index.ts`
 
 **Files to create:**
 - `packages/framework/src/utils/config.ts`

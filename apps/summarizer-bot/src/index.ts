@@ -5,5 +5,8 @@ const ConfigSchema = z.object({
     ollamaUrl: z.url(),
 });
 
-const config = createConfig(ConfigSchema);
+const config = createConfig(ConfigSchema, {
+    ollamaUrl: process.env.OLLAMA_URL || '',
+});
+
 console.log({ c: config.ollamaUrl });

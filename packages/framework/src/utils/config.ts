@@ -13,31 +13,48 @@ dotenv.config();
  * combined schema, providing a type-safe configuration object.
  *
  * @param userSchema - A Zod schema defining the user-specific configuration.
+ * @param overrides - config overrides
  * @returns A validated, type-safe configuration object.
  */
 export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
-    userSchema: T
+    userSchema: T,
+    overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>
 ): z.infer<T> & z.infer<typeof BaseConfigSchema> {
     const MergedSchema = BaseConfigSchema.and(userSchema);
+    const configOverrides = overrides ?? {};
+
+    type BaseConfig = z.infer<typeof BaseConfigSchema>;
+    type MergedConfig = z.infer<T> & BaseConfig;
+
+    const defaultValues = {
+        discord: {
+            token: process.env.DISCORD_TOKEN ?? (configOverrides as Partial<MergedConfig>)?.discord?.token,
+        },
+        database: {
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : undefined,
+            database: process.env.DB_DATABASE,
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
+        },
+        ...process.env,
+        ...configOverrides,
+    };
+
+    const mergedValues = {
+        ...defaultValues,
+        discord: {
+            ...defaultValues.discord,
+            ...((configOverrides as Partial<MergedConfig>)?.discord || {}),
+        },
+        database: {
+            ...defaultValues.database,
+            ...((configOverrides as Partial<MergedConfig>)?.database || {}),
+        },
+    };
 
     try {
-        // Here, you might need a more sophisticated way to map flat .env variables
-        // to the nested schema structure, but for now, we'll assume they are prefixed
-        // e.g., DISCORD_TOKEN, DATABASE_HOST
-        const parsedConfig = MergedSchema.parse({
-            discord: {
-                token: process.env.DISCORD_TOKEN,
-            },
-            database: {
-                host: process.env.DATABASE_HOST,
-                port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT, 10) : undefined,
-                database: process.env.DATABASE_NAME,
-                username: process.env.DATABASE_USER,
-                password: process.env.DATABASE_PASSWORD,
-            },
-            // Pass all env vars to be parsed for the user schema part
-            ...process.env,
-        });
+        const parsedConfig = MergedSchema.parse(mergedValues);
 
         return parsedConfig as z.infer<typeof MergedSchema>;
     } catch (error) {
