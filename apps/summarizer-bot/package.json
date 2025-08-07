@@ -20,10 +20,10 @@
     },
     "dependencies": {
         "@robo-cord/framework": "*",
-        "zod": "^4.0.15"
+        "zod": "^4.0.0"
     },
     "devDependencies": {
-        "@types/bun": "^1.2.19",
+        "@types/bun": "^1.2.0",
         "@robo-cord/tsconfig-shared": "*"
     },
     "peerDependencies": {

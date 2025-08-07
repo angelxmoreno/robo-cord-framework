@@ -16,19 +16,29 @@ dotenv.config();
  * @param overrides - config overrides
  * @returns A validated, type-safe configuration object.
  */
+// Type guard to safely check if overrides has discord config
+function hasDiscordConfig(overrides: unknown): overrides is { discord?: { token?: string } } {
+    return typeof overrides === 'object' && overrides !== null && 'discord' in overrides;
+}
+
+// Type guard to safely check if overrides has database config
+function hasDatabaseConfig(overrides: unknown): overrides is { database?: Record<string, unknown> } {
+    return typeof overrides === 'object' && overrides !== null && 'database' in overrides;
+}
+
 export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     userSchema: T,
-    overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>
+    overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>,
+    options: { shouldExit?: boolean } = { shouldExit: true }
 ): z.infer<T> & z.infer<typeof BaseConfigSchema> {
     const MergedSchema = BaseConfigSchema.and(userSchema);
     const configOverrides = overrides ?? {};
 
-    type BaseConfig = z.infer<typeof BaseConfigSchema>;
-    type MergedConfig = z.infer<T> & BaseConfig;
-
     const defaultValues = {
         discord: {
-            token: process.env.DISCORD_TOKEN ?? (configOverrides as Partial<MergedConfig>)?.discord?.token,
+            token:
+                process.env.DISCORD_TOKEN ??
+                (hasDiscordConfig(configOverrides) ? configOverrides.discord?.token : undefined),
         },
         database: {
             host: process.env.DB_HOST,
@@ -45,11 +55,11 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
         ...defaultValues,
         discord: {
             ...defaultValues.discord,
-            ...((configOverrides as Partial<MergedConfig>)?.discord || {}),
+            ...(hasDiscordConfig(configOverrides) ? configOverrides.discord || {} : {}),
         },
         database: {
             ...defaultValues.database,
-            ...((configOverrides as Partial<MergedConfig>)?.database || {}),
+            ...(hasDatabaseConfig(configOverrides) ? configOverrides.database || {} : {}),
         },
     };
 
@@ -64,7 +74,11 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
                 console.error(`  • Path: ${issue.path.join('.')}`);
                 console.error(`    Message: ${issue.message}\n`);
             }
-            process.exit(1);
+            if (options.shouldExit) {
+                process.exit(1);
+            } else {
+                throw error;
+            }
         }
         throw error;
     }

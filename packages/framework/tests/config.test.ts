@@ -38,17 +38,11 @@ describe('createConfig', () => {
         envSetup();
 
         const consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
-        const exitSpy = spyOn(process, 'exit').mockImplementation(
-            (code?: string | number | null | undefined): never => {
-                throw new Error(`process.exit called with code ${code}`);
-            }
-        );
 
-        expect(() => createConfig(schema, overrides)).toThrow('process.exit called with code 1');
+        expect(() => createConfig(schema, overrides, { shouldExit: false })).toThrow();
         expect(consoleSpy).toHaveBeenCalledWith('❌ Configuration validation failed!\n');
 
         consoleSpy.mockRestore();
-        exitSpy.mockRestore();
     };
 
     beforeEach(() => {
