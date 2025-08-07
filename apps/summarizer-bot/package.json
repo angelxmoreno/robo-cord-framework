@@ -1,0 +1,26 @@
+{
+    "name": "@apps/summarizer-bot",
+    "module": "src/index.ts",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "docker": "docker compose --env-file .env -f docker-compose.yml",
+        "docker:restart": "bun run docker:stop && bun run docker:start",
+        "docker:start": "bun run docker up -d",
+        "docker:stop": "bun run docker down",
+        "docker:logs": "bun run docker logs",
+        "docker:clean": "bun run docker down -v",
+        "clean": "rm -rf node_modules bun.lock dist",
+        "build": "tsc",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@robo-cord/framework": "*"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.2.19"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    }
+}

@@ -8,13 +8,13 @@
 **Estimated Time: 3-4 hours**
 
 - [X] Initialize root workspace with `bun init`
-- [ ] Create monorepo directory structure (`packages/framework/`, `apps/example-bot/`)
+- [X] Create monorepo directory structure (`packages/framework/`, `apps/example-bot/`)
 - [X] Set up root `package.json` with workspace configuration
 - [ ] Set up framework `package.json` as private GitHub registry package
-- [ ] Set up example-bot `package.json` with workspace dependency
-- [ ] Configure individual `tsconfig.json` files for framework and bot
-- [ ] Create `.env.example` templates for bot applications
-- [ ] Set up `docker-compose.yml` for shared development services
+- [X] Set up example-bot `package.json` with workspace dependency
+- [X] Configure individual `tsconfig.json` files for framework and bot
+- [X] Create `.env.example` templates for bot applications
+- [X] Set up `docker-compose.yml` for shared development services
 - [ ] Create workspace-level scripts for development and publishing
 
 **Files to create:**
@@ -31,7 +31,7 @@
 **Dependencies: Task 1**  
 **Estimated Time: 4-5 hours**
 
-- [ ] Create `packages/framework/src/` directory structure
+- [X] Create `packages/framework/src/` directory structure
 - [ ] Create `packages/framework/src/utils/config.ts` with Zod schema
 - [ ] Implement `createConfig()` function for extensible configuration
 - [ ] Add environment-based defaults (dev vs prod)
