@@ -16,9 +16,11 @@
         "clean": "bun run clean:root && turbo run clean",
         "build": "turbo run build",
         "dev": "turbo run dev",
+        "test": "turbo run test",
+        "test:watch": "turbo run test:watch",
         "lint": "biome check .",
         "lint:fix": "biome check --write",
-        "check-types": "turbo run check-types"
+        "typecheck": "turbo run typecheck"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.1.3",

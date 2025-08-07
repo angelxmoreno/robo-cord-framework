@@ -15,19 +15,21 @@
         "dist"
     ],
     "scripts": {
-        "clean": "rm -rf node_modules bun.lock dist",
+        "clean": "rimraf node_modules bun.lock dist",
         "typecheck": "tsc --noEmit",
-        "build": "tsc && tsc-alias"
-    },
-    "devDependencies": {
-        "@types/bun": "^1.2.19",
-        "tsc-alias": "^1.8.8"
-    },
-    "peerDependencies": {
-        "typescript": "^5"
+        "prebuild": "rimraf dist",
+        "build": "tsc --project tsconfig.build.json"
     },
     "dependencies": {
         "dotenv": "^17.2.1",
         "zod": "^4.0.15"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.2.19",
+        "rimraf": "^6.0.1",
+        "tsc-alias": "^1.8.16"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
     }
 }
