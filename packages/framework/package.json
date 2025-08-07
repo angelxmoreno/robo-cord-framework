@@ -1,13 +1,14 @@
 {
     "name": "@robo-cord/framework",
     "type": "module",
-    "main": "./dist/index.js",
+    "main": "./src/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "bun": "./src/index.ts",
             "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
+            "types": "./src/index.ts"
         }
     },
     "files": [
@@ -16,12 +17,17 @@
     "scripts": {
         "clean": "rm -rf node_modules bun.lock dist",
         "typecheck": "tsc --noEmit",
-        "build": "tsc"
+        "build": "tsc && tsc-alias"
     },
     "devDependencies": {
-        "@types/bun": "^1.2.19"
+        "@types/bun": "^1.2.19",
+        "tsc-alias": "^1.8.8"
     },
     "peerDependencies": {
         "typescript": "^5"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.1",
+        "zod": "^4.0.15"
     }
 }

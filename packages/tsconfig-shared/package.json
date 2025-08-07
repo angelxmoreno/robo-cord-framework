@@ -1,0 +1,9 @@
+{
+    "name": "@robo-cord/tsconfig-shared",
+    "private": true,
+    "version": "0.0.0",
+    "description": "Shared TypeScript configuration for Robo Cord Framework apps",
+    "files": [
+        "tsconfig.json"
+    ]
+}

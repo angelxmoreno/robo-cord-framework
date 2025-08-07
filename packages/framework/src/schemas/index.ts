@@ -1,0 +1,1 @@
+export { BaseConfigSchema } from './BaseConfigSchema';

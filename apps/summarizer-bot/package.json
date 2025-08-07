@@ -15,10 +15,12 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@robo-cord/framework": "*"
+        "@robo-cord/framework": "*",
+        "zod": "^4.0.15"
     },
     "devDependencies": {
-        "@types/bun": "^1.2.19"
+        "@types/bun": "^1.2.19",
+        "@robo-cord/tsconfig-shared": "*"
     },
     "peerDependencies": {
         "typescript": "^5"
