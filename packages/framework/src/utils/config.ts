@@ -5,17 +5,6 @@ import { z } from 'zod';
 // Load environment variables from .env file
 dotenv.config();
 
-/**
- * Creates and validates a configuration object for the bot application.
- *
- * This function merges the framework's base configuration requirements with a
- * user-provided Zod schema. It then parses environment variables against the
- * combined schema, providing a type-safe configuration object.
- *
- * @param userSchema - A Zod schema defining the user-specific configuration.
- * @param overrides - config overrides
- * @returns A validated, type-safe configuration object.
- */
 // Type guard to safely check if overrides has discord config
 function hasDiscordConfig(overrides: unknown): overrides is { discord?: { token?: string } } {
     return typeof overrides === 'object' && overrides !== null && 'discord' in overrides;
@@ -26,6 +15,18 @@ function hasDatabaseConfig(overrides: unknown): overrides is { database?: Record
     return typeof overrides === 'object' && overrides !== null && 'database' in overrides;
 }
 
+/**
+ * Creates and validates a configuration object for the bot application.
+ *
+ * This function merges the framework's base configuration requirements with a
+ * user-provided Zod schema. It then parses environment variables against the
+ * combined schema, providing a type-safe configuration object.
+ *
+ * @param userSchema - A Zod schema defining the user-specific configuration.
+ * @param overrides - config overrides
+ * @param options - Configuration options. Set shouldExit to false to throw errors instead of exiting process.
+ * @returns A validated, type-safe configuration object.
+ */
 export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     userSchema: T,
     overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>,
@@ -35,6 +36,7 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     const configOverrides = overrides ?? {};
 
     const defaultValues = {
+        isDevelopment: process.env.NODE_ENV !== 'production',
         discord: {
             token:
                 process.env.DISCORD_TOKEN ??
