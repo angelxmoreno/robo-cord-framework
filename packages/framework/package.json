@@ -1,23 +1,39 @@
 {
     "name": "@robo-cord/framework",
     "type": "module",
-    "main": "./dist/index.js",
+    "main": "./src/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "bun": "./src/index.ts",
             "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
+            "types": "./src/index.ts"
+        },
+        "./schemas": {
+            "bun": "./src/schemas/index.ts",
+            "import": "./dist/schemas/index.js",
+            "types": "./src/schemas/index.ts"
         }
     },
     "files": [
         "dist"
     ],
     "scripts": {
-        "build": "tsc"
+        "clean": "rimraf node_modules bun.lock dist",
+        "test": "bun test",
+        "typecheck": "tsc --noEmit",
+        "prebuild": "rimraf dist",
+        "build": "tsc --project tsconfig.build.json"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.0",
+        "zod": "^4.0.0"
     },
     "devDependencies": {
-        "@types/bun": "^1.2.19"
+        "@types/bun": "^1.2.0",
+        "rimraf": "^6.0.0",
+        "tsc-alias": "^1.8.0"
     },
     "peerDependencies": {
         "typescript": "^5"

@@ -8,7 +8,7 @@ pre-commit:
         - rebase
       files: git diff --name-only HEAD
     types:
-      run: bun run check-types
+      run: bun run typecheck
       skip:
         - merge
         - rebase

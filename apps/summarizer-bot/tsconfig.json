@@ -1,0 +1,3 @@
+{
+    "extends": "@robo-cord/tsconfig-shared/tsconfig.json"
+}
