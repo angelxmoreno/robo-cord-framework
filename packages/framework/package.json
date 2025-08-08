@@ -9,6 +9,11 @@
             "bun": "./src/index.ts",
             "import": "./dist/index.js",
             "types": "./src/index.ts"
+        },
+        "./schemas": {
+            "bun": "./src/schemas/index.ts",
+            "import": "./dist/schemas/index.js",
+            "types": "./src/schemas/index.ts"
         }
     },
     "files": [
