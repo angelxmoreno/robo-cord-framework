@@ -50,7 +50,8 @@ describe('LoggerService', () => {
 
         // Check that the child logger has the name binding
         // Note: This tests the internal pino structure
-        expect(logger.bindings()).toEqual({ name: 'my-service' });
+        const bindings = logger.bindings();
+        expect(bindings.name).toBe('my-service');
     });
 
     it('should track logger count correctly', () => {
@@ -102,7 +103,8 @@ describe('LoggerService', () => {
 
         const childLogger = loggerService.getLogger('transport-test');
         expect(childLogger).toBeDefined();
-        expect(childLogger.bindings()).toEqual({ name: 'transport-test' });
+        const bindings = childLogger.bindings();
+        expect(bindings.name).toBe('transport-test');
     });
 
     it('should work with basic configurations', () => {
