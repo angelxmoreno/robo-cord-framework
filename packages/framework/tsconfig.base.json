@@ -27,12 +27,6 @@
         // Some stricter flags (disabled by default)
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noPropertyAccessFromIndexSignature": false,
-
-        //paths
-        "baseUrl": "./src",
-        "paths": {
-            "@framework/*": ["*"]
-        }
+        "noPropertyAccessFromIndexSignature": false
     }
 }
