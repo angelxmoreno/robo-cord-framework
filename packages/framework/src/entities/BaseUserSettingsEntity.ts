@@ -9,7 +9,7 @@ export abstract class BaseUserSettingsEntity {
     @Column({ type: 'varchar', length: 20 })
     protected userId: string;
 
-    @Column({ type: 'jsonb', default: '{}' })
+    @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
     protected metadata: Record<string, unknown>;
 
     @CreateDateColumn()

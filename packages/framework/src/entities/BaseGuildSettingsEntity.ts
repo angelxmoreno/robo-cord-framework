@@ -9,7 +9,7 @@ export abstract class BaseGuildSettingsEntity {
     @Column({ type: 'varchar', length: 20 })
     protected guildId: string;
 
-    @Column({ type: 'jsonb', default: '{}' })
+    @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
     protected metadata: Record<string, unknown>;
 
     @CreateDateColumn()

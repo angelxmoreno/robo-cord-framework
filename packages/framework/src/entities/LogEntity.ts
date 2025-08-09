@@ -1,5 +1,13 @@
 import { Column, CreateDateColumn, Entity, Generated, Index, PrimaryColumn } from 'typeorm';
 
+export enum LogLevel {
+    ERROR = 'error',
+    WARN = 'warn',
+    INFO = 'info',
+    DEBUG = 'debug',
+    VERBOSE = 'verbose',
+}
+
 @Entity('logs')
 @Index('logs_service_level_idx', ['service', 'level', 'createdAt'])
 export class LogEntity {
@@ -8,8 +16,8 @@ export class LogEntity {
     id: string;
 
     @Index()
-    @Column({ type: 'varchar', length: 10, default: 'info' })
-    level: string;
+    @Column({ type: 'enum', enum: LogLevel, default: LogLevel.INFO })
+    level: LogLevel;
 
     @Column({ type: 'text' })
     message: string;
@@ -41,10 +49,10 @@ export class LogEntity {
     @Column({ type: 'text', nullable: true })
     errorStack?: string | null;
 
-    @Column({ type: 'jsonb', default: '{}' })
+    @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
     metadata: Record<string, unknown>;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamptz' })
     @Index()
     createdAt: Date;
 }

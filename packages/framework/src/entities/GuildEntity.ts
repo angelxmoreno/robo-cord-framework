@@ -26,18 +26,18 @@ export class GuildEntity {
     @Column({ type: 'integer', default: 0 })
     verificationLevel: number;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamptz' })
     joinedAt: Date;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamptz', nullable: true })
     leftAt?: Date | null;
 
     @Column({ type: 'boolean', default: true })
     isActive: boolean;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamptz' })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamptz' })
     updatedAt: Date;
 }

@@ -9,6 +9,7 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "strictPropertyInitialization": false,
+        "useDefineForClassFields": false,
 
         // Environment setup & latest features
         "lib": ["ESNext"],

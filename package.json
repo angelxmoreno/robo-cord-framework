@@ -21,7 +21,7 @@
         "lint": "biome check .",
         "lint:fix": "biome check --write",
         "typecheck": "turbo run typecheck",
-        "ci:check": "bun run lint:fix && bun run build && bun run typecheck"
+        "check": "bun run lint:fix && bun run build && bun run typecheck && bun test"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.1.0",

@@ -1,16 +1,9 @@
-import {
-    CommandUsageEntity,
-    GuildEntity,
-    GuildMemberEntity,
-    LogEntity,
-    MessageEntity,
-    UserEntity,
-} from '@framework/entities';
-import type { BaseConfigSchema } from '@framework/schemas';
 import { injectable } from 'tsyringe';
 import type { DataSource, DataSourceOptions } from 'typeorm';
 import type { z } from 'zod';
 import { AppDataSource } from '../database/data-source';
+import { CommandUsageEntity, GuildEntity, GuildMemberEntity, LogEntity, MessageEntity, UserEntity } from '../entities';
+import type { BaseConfigSchema } from '../schemas';
 
 @injectable()
 export class DatabaseService {
@@ -46,7 +39,9 @@ export class DatabaseService {
     }
 
     public async stop(): Promise<void> {
-        await this.dataSource.destroy();
+        if (this.appDataSource?.isInitialized) {
+            await this.appDataSource.destroy();
+        }
     }
 
     public get dataSource(): DataSource {

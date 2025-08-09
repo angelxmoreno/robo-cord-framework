@@ -6,8 +6,5 @@ const ConfigSchema = z.object({
 });
 
 export const config = createConfig(ConfigSchema, {
-    ollamaUrl: process.env.OLLAMA_URL || '',
-    database: {
-        logging: false,
-    },
+    ollamaUrl: process.env.OLLAMA_URL || 'http://127.0.0.1:11434',
 });

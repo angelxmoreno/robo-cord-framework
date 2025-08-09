@@ -21,10 +21,10 @@ export class GuildMemberEntity {
     nickname?: string | null;
 
     @Index()
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamptz' })
     joinedAt: Date;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamptz', nullable: true })
     leftAt?: Date | null;
 
     @Index()
@@ -35,14 +35,14 @@ export class GuildMemberEntity {
     @Column({ type: 'boolean', default: true })
     isActive: boolean;
 
-    @Column({ type: 'jsonb', default: '[]' })
+    @Column({ type: 'jsonb', default: () => "'[]'::jsonb" })
     roles: string[];
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamptz', nullable: true })
     boostSince?: Date | null;
 
     @Index()
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamptz', nullable: true })
     timeoutUntil?: Date | null;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
@@ -55,13 +55,13 @@ export class GuildMemberEntity {
     @Column({ type: 'varchar', length: 20, nullable: true })
     voiceChannelId?: string | null;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamptz', nullable: true })
     voiceJoinedAt?: Date | null;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamptz' })
     @Index()
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamptz' })
     updatedAt: Date;
 }

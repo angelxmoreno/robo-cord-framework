@@ -1,7 +1,7 @@
-import { BaseConfigSchema } from '@framework/schemas';
-import { deepMerge } from '@framework/utils/deepMerge';
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import { BaseConfigSchema } from '../schemas';
+import { deepMerge } from './deepMerge';
 
 /**
  * Creates and validates a configuration object for the bot application.

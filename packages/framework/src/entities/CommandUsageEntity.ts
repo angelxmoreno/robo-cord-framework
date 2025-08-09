@@ -34,13 +34,13 @@ export class CommandUsageEntity {
     @Column({ type: 'text', nullable: true })
     errorMessage?: string | null;
 
-    @Column({ type: 'jsonb', default: '{}' })
+    @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
     parameters: Record<string, unknown>;
 
     @Column({ type: 'varchar', length: 20, default: 'reply' })
     responseType: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamptz' })
     @Index()
     createdAt: Date;
 }
