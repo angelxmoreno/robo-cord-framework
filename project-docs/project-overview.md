@@ -5,18 +5,40 @@ A production-ready Discord bot framework built with TypeScript, featuring databa
 ## 🚀 Features
 
 - **Two-App Architecture**: Separate bot and worker processes sharing resources
-- **Database Integration**: PostgreSQL with TypeORM and auto-migrations
-- **Worker Queue System**: Background job processing with pg-boss
-- **Slash Command Routing**: Auto-discovered modular command system
-- **Event System**: Auto-registered Discord event handlers
-- **Middleware Pipeline**: Decorator-based command middleware
-- **Dependency Injection**: Clean architecture with TSyringe
+- **Database Integration**: PostgreSQL with TypeORM and auto-migrations (in development)
+- **Worker Queue System**: Background job processing with pg-boss (planned)
+- **Slash Command Routing**: Auto-discovered modular command system (planned)
+- **Event System**: Auto-registered Discord event handlers (planned)
+- **Middleware Pipeline**: Decorator-based command middleware (planned)
+- **Dependency Injection**: Clean architecture with TSyringe (planned)
 - **Type Safety**: Full TypeScript + Zod validation with strict typing
-- **Hot Reloading**: Commands, jobs, and events refresh without restart
-- **Convention Over Configuration**: Automagic discovery and registration
-- **Enterprise Logging**: Pino logger with database storage
-- **Extensible Config**: Strongly typed configuration system
+- **Hot Reloading**: Commands, jobs, and events refresh without restart (planned)
+- **Convention Over Configuration**: Automagic discovery and registration (planned)
+- **Enterprise Logging**: Pino logger with database storage (in development)
+- **Extensible Config**: Enhanced configuration system with overrides and flexible exit behavior
 - **Monorepo Structure**: Framework package + multiple bot applications
+
+## 🚧 Current Implementation Status
+
+**✅ Implemented:**
+- Enhanced configuration system with Zod validation
+- Configuration overrides and flexible exit behavior
+- Type safety with proper type guards
+- Monorepo structure with proper TypeScript path mapping
+- Package exports for clean module boundaries
+- Comprehensive test suite with Bun test runner
+
+**🔄 In Progress:**
+- Database entities and TypeORM integration (active development)
+- Core framework services and utilities
+- Discord.js integration and event system
+- Enterprise logging with database storage
+
+**📋 Planned:**
+- Slash command routing and auto-discovery
+- Worker queue system with pg-boss
+- Middleware pipeline and decorators
+- Dependency injection with TSyringe
 
 ## 📁 Monorepo Structure
 
@@ -269,28 +291,69 @@ export class WelcomeJob extends BaseJob<typeof WelcomeJobSchema> {
 
 ### Bot Application Startup
 ```typescript
-// apps/example-bot/src/apps/bot.ts
-import { BotApp, createConfig } from '@yourname/discord-bot-framework';
+// apps/example-bot/src/index.ts
+import { createConfig } from '@robo-cord/framework';
 import { z } from 'zod';
 
-const MyConfigSchema = z.object({
-  openai: z.object({
-    apiKey: z.string().min(1, 'OpenAI API key required'),
-    model: z.string().default('gpt-3.5-turbo'),
-  }),
+const ConfigSchema = z.object({
+  ollamaUrl: z.string().url('Invalid URL format'),
+  customSetting: z.string().optional(),
 });
 
-const config = createConfig(MyConfigSchema);
-
-const bot = new BotApp({
-  config,
-  commandsPath: './src/commands',
-  eventsPath: './src/events',
-  entitiesPath: './src/entities',
+// Using the enhanced createConfig with overrides
+const config = createConfig(ConfigSchema, {
+  ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
+  customSetting: 'default-value',
+  // Override base config if needed
+  discord: {
+    token: process.env.CUSTOM_DISCORD_TOKEN,
+  }
+}, {
+  shouldExit: false // For library usage
 });
 
-bot.start();
+// Bot logic here...
 ```
+
+## 🔧 Enhanced Configuration System
+
+The framework now features an improved configuration system with several key enhancements:
+
+### Configuration Overrides
+Instead of complex schema preprocessing, use the cleaner `overrides` parameter:
+
+```typescript
+const config = createConfig(UserSchema, {
+  // Direct value overrides
+  ollamaUrl: 'http://custom-server:8080',
+  
+  // Nested config overrides
+  discord: { token: 'custom-token' },
+  database: { host: 'custom-db', port: 3306 }
+});
+```
+
+### Flexible Exit Behavior
+Control whether validation failures exit the process:
+
+```typescript
+// Default behavior (exits on failure)
+const config = createConfig(schema, overrides);
+
+// Library-friendly (throws error instead)
+const config = createConfig(schema, overrides, { shouldExit: false });
+```
+
+### Type Safety Improvements
+- Removed unsafe type casts with proper type guards
+- Full TypeScript inference for merged schemas
+- Enhanced error messages and validation
+
+### Base Configuration Requirements
+All bots automatically include:
+- Discord bot token validation
+- Database connection configuration  
+- Environment variable parsing with defaults
 
 ## 🚀 Quick Start
 

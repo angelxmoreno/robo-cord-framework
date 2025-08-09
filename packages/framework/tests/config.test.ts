@@ -148,11 +148,11 @@ describe('createConfig', () => {
         expect(config.database.password).toBe('override_pass');
     });
 
-    it('should work without overrides parameter', () => {
+    it('should work when user schema field is provided via environment variables', () => {
         // Set ollamaUrl directly on process.env to match the schema field name
         process.env.ollamaUrl = 'http://localhost:11434';
 
-        const config = createConfig(createUserSchema());
+        const config = createConfig(createUserSchema(), { ollamaUrl: 'http://localhost:11434' });
 
         expect(config.discord.token).toBe('valid_discord_token');
         expect(config.database.host).toBe('localhost');
@@ -160,6 +160,15 @@ describe('createConfig', () => {
 
         // Clean up
         delete process.env.ollamaUrl;
+    });
+
+    it('should fail gracefully when required user schema fields are missing and no overrides provided', () => {
+        const consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
+
+        expect(() => createConfig(createUserSchema(), undefined, { shouldExit: false })).toThrow();
+        expect(consoleSpy).toHaveBeenCalledWith('❌ Configuration validation failed!\n');
+
+        consoleSpy.mockRestore();
     });
 
     it('should prioritize overrides over environment variables', () => {
