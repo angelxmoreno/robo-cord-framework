@@ -53,7 +53,7 @@
 **Dependencies: Task 2**  
 **Estimated Time: 5-6 hours**
 
-- [ ] Create all framework entities in `packages/framework/src/entities/`:
+- [X] Create all framework entities in `packages/framework/src/entities/`:
     - `UserEntity.ts`
     - `GuildEntity.ts`
     - `GuildMemberEntity.ts`
@@ -62,10 +62,10 @@
     - `CommandUsageEntity.ts`
     - `BaseGuildSettingsEntity.ts`
     - `BaseUserSettingsEntity.ts`
-- [ ] Set up TypeORM DataSource configuration in framework
-- [ ] Create `DatabaseService.ts` for connection management
-- [ ] Test database connection with example bot
-- [ ] Add database entities to framework exports
+- [X] Set up TypeORM DataSource configuration in framework
+- [X] Create `DatabaseService.ts` for connection management
+- [X] Test database connection with example bot
+- [X] Add database entities to framework exports
 
 **Files to create:**
 - `packages/framework/src/entities/*.ts` (8 files)
