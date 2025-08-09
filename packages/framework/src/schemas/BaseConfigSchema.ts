@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { LoggerOptionsSchema } from './LoggerOptionsSchema';
 
 /**
  * Defines the base configuration schema required by the framework.
@@ -18,4 +19,5 @@ export const BaseConfigSchema = z.object({
         synchronize: z.boolean().optional(),
         logging: z.boolean().optional(),
     }),
+    logger: LoggerOptionsSchema,
 });

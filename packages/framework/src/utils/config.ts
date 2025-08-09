@@ -1,7 +1,44 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 import { BaseConfigSchema } from '../schemas';
 import { deepMerge } from './deepMerge';
+
+/**
+ * Creates environment-based logger configuration defaults.
+ */
+function createLoggerDefaults(isDevelopment: boolean) {
+    // Ensure logs directory exists
+    const logsDir = path.join(process.cwd(), 'logs');
+    if (!fs.existsSync(logsDir)) {
+        fs.mkdirSync(logsDir, { recursive: true });
+    }
+
+    const logFile = path.join(logsDir, isDevelopment ? 'development.log' : 'production.log');
+
+    if (isDevelopment) {
+        // Development: pino-pretty for console, debug level
+        return {
+            level: 'debug',
+            transport: {
+                target: 'pino-pretty',
+                options: {
+                    colorize: true,
+                    translateTime: 'HH:MM:ss Z',
+                    ignore: 'pid,hostname',
+                    destination: logFile,
+                },
+            },
+        };
+    } else {
+        // Production: JSON format to file, info level
+        return {
+            level: 'info',
+            destination: logFile,
+        };
+    }
+}
 
 /**
  * Creates and validates a configuration object for the bot application.
@@ -25,9 +62,10 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
 
     const MergedSchema = BaseConfigSchema.and(userSchema);
 
+    const isDevelopment = process.env.NODE_ENV !== 'production';
     // Build base config from environment variables
     const baseConfig = {
-        isDevelopment: process.env.NODE_ENV !== 'production',
+        isDevelopment,
         discord: {
             ...(process.env.DISCORD_TOKEN && { token: process.env.DISCORD_TOKEN }),
         },
@@ -38,6 +76,7 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
             ...(process.env.DB_USERNAME && { username: process.env.DB_USERNAME }),
             ...(process.env.DB_PASSWORD && { password: process.env.DB_PASSWORD }),
         },
+        logger: createLoggerDefaults(isDevelopment) as z.infer<typeof BaseConfigSchema>['logger'],
     };
 
     // Deep merge base config with overrides

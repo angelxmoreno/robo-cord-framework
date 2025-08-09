@@ -3,10 +3,10 @@
 
 // Currently implemented services
 export { DatabaseService } from './DatabaseService';
+export { LoggerService } from './LoggerService';
 
 // TODO: Export other services when implemented
 // export { CommandService } from './CommandService';
 // export { DiscordService } from './DiscordService';
-// export { LoggerService } from './LoggerService';
 // export { MiddlewareService } from './MiddlewareService';
 // export { QueueService } from './QueueService';
