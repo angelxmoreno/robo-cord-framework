@@ -5,6 +5,11 @@
         }
     ],
     "compilerOptions": {
+        // Decorators
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false,
+
         // Environment setup & latest features
         "lib": ["ESNext"],
         "target": "ESNext",

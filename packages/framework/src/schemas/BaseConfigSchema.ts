@@ -15,5 +15,7 @@ export const BaseConfigSchema = z.object({
         database: z.string().min(1, 'Database name is required'),
         username: z.string().min(1, 'Database username is required'),
         password: z.string().min(1, 'Database password is required'),
+        synchronize: z.boolean().optional(),
+        logging: z.boolean().optional(),
     }),
 });

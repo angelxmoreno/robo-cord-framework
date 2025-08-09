@@ -1,19 +1,7 @@
 import { BaseConfigSchema } from '@framework/schemas';
+import { deepMerge } from '@framework/utils/deepMerge';
 import dotenv from 'dotenv';
 import { z } from 'zod';
-
-// Load environment variables from .env file
-dotenv.config();
-
-// Type guard to safely check if overrides has discord config
-function hasDiscordConfig(overrides: unknown): overrides is { discord?: { token?: string } } {
-    return typeof overrides === 'object' && overrides !== null && 'discord' in overrides;
-}
-
-// Type guard to safely check if overrides has database config
-function hasDatabaseConfig(overrides: unknown): overrides is { database?: Record<string, unknown> } {
-    return typeof overrides === 'object' && overrides !== null && 'database' in overrides;
-}
 
 /**
  * Creates and validates a configuration object for the bot application.
@@ -32,41 +20,31 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>,
     options: { shouldExit?: boolean } = { shouldExit: true }
 ): z.infer<T> & z.infer<typeof BaseConfigSchema> {
-    const MergedSchema = BaseConfigSchema.and(userSchema);
-    const configOverrides = overrides ?? {};
+    // Load .env file from the calling app's directory
+    dotenv.config();
 
-    const defaultValues = {
+    const MergedSchema = BaseConfigSchema.and(userSchema);
+
+    // Build base config from environment variables
+    const baseConfig = {
         isDevelopment: process.env.NODE_ENV !== 'production',
         discord: {
-            token:
-                process.env.DISCORD_TOKEN ??
-                (hasDiscordConfig(configOverrides) ? configOverrides.discord?.token : undefined),
+            ...(process.env.DISCORD_TOKEN && { token: process.env.DISCORD_TOKEN }),
         },
         database: {
-            host: process.env.DB_HOST,
-            port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : undefined,
-            database: process.env.DB_DATABASE,
-            username: process.env.DB_USERNAME,
-            password: process.env.DB_PASSWORD,
+            ...(process.env.DB_HOST && { host: process.env.DB_HOST }),
+            ...(process.env.DB_PORT && { port: parseInt(process.env.DB_PORT, 10) }),
+            ...(process.env.DB_DATABASE && { database: process.env.DB_DATABASE }),
+            ...(process.env.DB_USERNAME && { username: process.env.DB_USERNAME }),
+            ...(process.env.DB_PASSWORD && { password: process.env.DB_PASSWORD }),
         },
-        ...process.env,
-        ...configOverrides,
     };
 
-    const mergedValues = {
-        ...defaultValues,
-        discord: {
-            ...defaultValues.discord,
-            ...(hasDiscordConfig(configOverrides) ? configOverrides.discord || {} : {}),
-        },
-        database: {
-            ...defaultValues.database,
-            ...(hasDatabaseConfig(configOverrides) ? configOverrides.database || {} : {}),
-        },
-    };
+    // Deep merge base config with overrides
+    const mergedConfig = overrides ? deepMerge(baseConfig, overrides) : baseConfig;
 
     try {
-        const parsedConfig = MergedSchema.parse(mergedValues);
+        const parsedConfig = MergedSchema.parse(mergedConfig);
 
         return parsedConfig as z.infer<typeof MergedSchema>;
     } catch (error) {
