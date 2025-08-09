@@ -223,6 +223,51 @@ export class UserSettingsEntity extends BaseUserSettingsEntity {
 - **error_logs_idx**: `WHERE level = 'error'` on logs - For error monitoring
 - **failed_commands_idx**: `WHERE success = false` on command_usage - For failure tracking
 
+## Entity Discovery Flow
+
+### RoboCordApp Integration
+
+The abstract `RoboCordApp` base class handles entity discovery and registration automatically:
+
+1. **Framework Entities**: Always included (UserEntity, GuildEntity, etc.)
+2. **User Entities**: Discovered from `./src/entities/` using `utils/discovery.ts`
+3. **Combined Registration**: All entities passed to DatabaseService constructor
+4. **TypeORM Configuration**: DataSource created with discovered entities
+
+### Discovery Process
+```typescript
+// In RoboCordApp.initializeCore()
+private async discoverAllEntities(): Promise<any[]> {
+  const frameworkEntities = [
+    UserEntity, GuildEntity, GuildMemberEntity, 
+    MessageEntity, LogEntity, CommandUsageEntity
+  ];
+  
+  // Uses utils/discovery.ts to scan user's entities directory
+  const userEntities = await discoverEntities('./src/entities');
+  
+  return [...frameworkEntities, ...userEntities];
+}
+
+// Entities passed to DatabaseService
+this.dbService = new DatabaseService(this.config, entities);
+```
+
+### User Entity Extension Pattern
+```typescript
+// User extends framework base entities
+@Entity('guild_settings')
+export class GuildSettingsEntity extends BaseGuildSettingsEntity {
+  @Column({ default: '!' })
+  prefix: string;
+  
+  @Column({ default: true })
+  welcome_enabled: boolean;
+  
+  // Automatically discovered and registered
+}
+```
+
 ## Notes
 
 - All Discord IDs use VARCHAR(20) to accommodate snowflake IDs
@@ -231,3 +276,5 @@ export class UserSettingsEntity extends BaseUserSettingsEntity {
 - Boolean fields have clear defaults for predictable behavior
 - Indexes are strategically placed for common query patterns
 - UUID primary keys for internal records, Discord IDs for Discord entities
+- Entity discovery is handled automatically by RoboCordApp using framework utilities
+- No manual entity registration required - follow naming conventions and place in `./src/entities/`

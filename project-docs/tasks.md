@@ -46,12 +46,32 @@
 - `packages/framework/src/index.ts`
 - `apps/example-bot/src/config.ts`
 
-## Phase 2: Database Layer (Core Infrastructure)
+## Phase 2: Core Utilities (Foundation)
 
-### Task 3: Framework Database Entities & Connection
+### Task 3: Discovery & Convention Utilities
 **Priority: HIGH**  
 **Dependencies: Task 2**  
-**Estimated Time: 5-6 hours**
+**Estimated Time: 4-5 hours**
+
+- [ ] Create `packages/framework/src/utils/discovery.ts` for file scanning
+- [ ] Implement entity discovery (`discoverEntities()`)
+- [ ] Implement command discovery (`discoverCommands()`)  
+- [ ] Implement job discovery (`discoverJobs()`)
+- [ ] Implement event discovery (`discoverEvents()`)
+- [ ] Create `packages/framework/src/utils/conventions.ts` for naming patterns
+- [ ] Create `packages/framework/src/utils/automagic.ts` for auto-registration
+- [ ] Test utilities with example file structures
+- [ ] Add utilities to framework exports
+
+**Files to create:**
+- `packages/framework/src/utils/discovery.ts`
+- `packages/framework/src/utils/conventions.ts`
+- `packages/framework/src/utils/automagic.ts`
+
+### Task 4: Framework Database Entities & Connection
+**Priority: HIGH**  
+**Dependencies: Task 3**  
+**Estimated Time: 4-5 hours**
 
 - [X] Create all framework entities in `packages/framework/src/entities/`:
     - `UserEntity.ts`
@@ -62,62 +82,45 @@
     - `CommandUsageEntity.ts`
     - `BaseGuildSettingsEntity.ts`
     - `BaseUserSettingsEntity.ts`
-- [X] Set up TypeORM DataSource configuration in framework
-- [X] Create `DatabaseService.ts` for connection management
+- [ ] Update `DatabaseService.ts` to accept entities array in constructor
 - [X] Test database connection with example bot
 - [X] Add database entities to framework exports
+- [ ] Remove `packages/framework/src/database/data-source.ts` (no longer needed)
 
 **Files to create:**
 - `packages/framework/src/entities/*.ts` (8 files)
 - `packages/framework/src/services/DatabaseService.ts`
+
+**Files to remove:**
 - `packages/framework/src/database/data-source.ts`
 
-### Task 4: Queue System with pg-boss
+## Phase 3: Base Classes & Services
+
+### Task 5: Base Classes for User Extension
 **Priority: HIGH**  
-**Dependencies: Task 3**  
-**Estimated Time: 4-5 hours**
+**Dependencies: Task 4**  
+**Estimated Time: 3-4 hours**
 
-- [ ] Create `QueueService.ts` in framework with pg-boss wrapper
-- [ ] Implement typed job registry system with Zod
-- [ ] Create `BaseJob.ts` base class in framework
-- [ ] Add job-related types and exports
-- [ ] Test job sending and processing between bot and worker
-- [ ] Create example job in `apps/example-bot/src/jobs/WelcomeJob.ts`
-- [ ] Add error handling and logging for queue operations
-
-**Files to create:**
-- `packages/framework/src/services/QueueService.ts`
-- `packages/framework/src/base/BaseJob.ts`
-- `apps/example-bot/src/jobs/WelcomeJob.ts`
-
-## Phase 3: Discord Integration & Base Classes
-
-### Task 5: Discord Service & Base Command
-**Priority: HIGH**  
-**Dependencies: Task 3**  
-**Estimated Time: 5-6 hours**
-
-- [ ] Create `DiscordService.ts` for client management in framework
-- [ ] Create `BaseEvent.ts` for Discord event handling in framework
 - [ ] Create `SlashCommand.ts` base class in framework
-- [ ] Implement basic command registration system
-- [ ] Add Discord-related exports to framework
-- [ ] Test Discord connection with example bot
-- [ ] Create example command in `apps/example-bot/src/commands/PingCommand.ts`
+- [ ] Create `BaseEvent.ts` for Discord event handling in framework
+- [ ] Create `BaseJob.ts` base class in framework
+- [ ] Create `BaseMiddleware.ts` interface in framework
+- [ ] Add base class exports to framework
+- [ ] Test base classes with example implementations
 
 **Files to create:**
-- `packages/framework/src/services/DiscordService.ts`
-- `packages/framework/src/base/BaseEvent.ts`
 - `packages/framework/src/base/SlashCommand.ts`
-- `apps/example-bot/src/commands/PingCommand.ts`
+- `packages/framework/src/base/BaseEvent.ts`
+- `packages/framework/src/base/BaseJob.ts`
+- `packages/framework/src/base/BaseMiddleware.ts`
 
 ### Task 6: Logging Service
-**Priority: MEDIUM**  
-**Dependencies: Task 3**  
+**Priority: HIGH**  
+**Dependencies: Task 4**  
 **Estimated Time: 3-4 hours**
 
 - [X] Create `LoggerService.ts` with Pino in framework
-- [ ] Implement database logging integration
+- [ ] Implement database logging integration with LogEntity
 - [X] Add different log levels and structured logging
 - [X] Test logging to console
 - [ ] Test logging to database
@@ -127,128 +130,126 @@
 **Files to create:**
 - `packages/framework/src/services/LoggerService.ts`
 
-## Phase 4: Auto-Discovery System (The Magic)
-
-### Task 7: Convention-Based Discovery
+### Task 7: Common Decorators & Middleware System
 **Priority: HIGH**  
-**Dependencies: Task 5**  
-**Estimated Time: 6-7 hours**
-
-- [ ] Create `discovery.ts` utility in framework for auto-scanning files
-- [ ] Create `conventions.ts` for naming rules (PingCommand → "ping")
-- [ ] Implement command auto-discovery and registration
-- [ ] Implement job auto-discovery and registration
-- [ ] Implement event auto-discovery and registration
-- [ ] Add discovery utilities to framework exports
-- [ ] Test with multiple commands, jobs, and events in example bot
-
-**Files to create:**
-- `packages/framework/src/utils/discovery.ts`
-- `packages/framework/src/utils/conventions.ts`
-- `packages/framework/src/utils/automagic.ts`
-
-### Task 8: Command Service & Registration
-**Priority: HIGH**  
-**Dependencies: Task 7**  
+**Dependencies: Task 5, Task 6**  
 **Estimated Time: 4-5 hours**
 
-- [ ] Create `CommandService.ts` for command management in framework
-- [ ] Implement slash command registration with Discord API
-- [ ] Add command prefix support
-- [ ] Handle command name conflicts and validation
-- [ ] Add command service to framework exports
-- [ ] Create deployment script for commands in workspace scripts
-- [ ] Test command registration with example bot
-
-**Files to create:**
-- `packages/framework/src/services/CommandService.ts`
-- `scripts/deploy-commands.ts`
-
-## Phase 5: Middleware System
-
-### Task 9: Base Middleware & Common Decorators
-**Priority: MEDIUM**  
-**Dependencies: Task 8**  
-**Estimated Time: 5-6 hours**
-
-- [ ] Create `BaseMiddleware.ts` interface in framework
-- [ ] Create `MiddlewareService.ts` for orchestration in framework
-- [ ] Implement decorator-based middleware application system
 - [ ] Create common decorators in framework:
     - `AdminOnly.ts`
     - `RateLimit.ts`
     - `LogUsage.ts`
+- [ ] Create `BaseMiddleware.ts` interface in framework
+- [ ] Create `MiddlewareService.ts` for orchestration in framework
+- [ ] Implement decorator-based middleware application system
 - [ ] Create decorator index file for exports
-- [ ] Test middleware pipeline with example bot commands
 - [ ] Add middleware exports to framework
+- [ ] Test middleware pipeline with mock implementations
 
 **Files to create:**
-- `packages/framework/src/base/BaseMiddleware.ts`
-- `packages/framework/src/services/MiddlewareService.ts`
 - `packages/framework/src/decorators/AdminOnly.ts`
 - `packages/framework/src/decorators/RateLimit.ts`
 - `packages/framework/src/decorators/LogUsage.ts`
 - `packages/framework/src/decorators/index.ts`
+- `packages/framework/src/services/MiddlewareService.ts`
 
-## Phase 6: Application Classes
-
-### Task 10: BotApp Class
+### Task 8: Core Services (Discord, Queue, Commands)
 **Priority: HIGH**  
-**Dependencies: Task 8, Task 9**  
+**Dependencies: Task 7**  
 **Estimated Time: 5-6 hours**
 
-- [ ] Create `BotApp.ts` main application class in framework
-- [ ] Implement auto-discovery integration for commands and events
-- [ ] Add graceful startup and shutdown procedures
-- [ ] Integrate all services (Database, Discord, Commands, etc.)
-- [ ] Add BotApp to framework exports
-- [ ] Create bot startup script in `apps/example-bot/src/apps/bot.ts`
-- [ ] Test full bot initialization and command handling
+- [ ] Create `DiscordService.ts` for client management in framework
+- [ ] Create `QueueService.ts` in framework with pg-boss wrapper
+- [ ] Create `CommandService.ts` for command management in framework
+- [ ] Implement typed job registry system with Zod
+- [ ] Implement command registration with Discord API
+- [ ] Integrate middleware system with CommandService
+- [ ] Add services to framework exports
+- [ ] Test services individually with middleware
 
 **Files to create:**
-- `packages/framework/src/apps/BotApp.ts`
-- `apps/example-bot/src/apps/bot.ts`
+- `packages/framework/src/services/DiscordService.ts`
+- `packages/framework/src/services/QueueService.ts`
+- `packages/framework/src/services/CommandService.ts`
 
-### Task 11: WorkerApp Class
+## Phase 4: RoboCordApp Base Class (Core Architecture)
+
+### Task 9: RoboCordApp Abstract Base Class
+**Priority: CRITICAL**  
+**Dependencies: Task 8**  
+**Estimated Time: 5-6 hours**
+
+- [ ] Create abstract `RoboCordApp.ts` base class in framework
+- [ ] Implement shared initialization logic (logger, database, entities)
+- [ ] Add template methods for app-specific services
+- [ ] Integrate with discovery utilities for entity/command/job scanning
+- [ ] Add service lifecycle management (startup/shutdown)
+- [ ] Add graceful error handling and logging
+- [ ] Test base class functionality with mock implementations
+- [ ] Add RoboCordApp to framework exports
+
+**Files to create:**
+- `packages/framework/src/apps/RoboCordApp.ts`
+
+### Task 10: BotApp Implementation
 **Priority: HIGH**  
-**Dependencies: Task 4, Task 10**  
-**Estimated Time: 4-5 hours**
+**Dependencies: Task 9**  
+**Estimated Time: 3-4 hours**
 
-- [ ] Create `WorkerApp.ts` worker application class in framework
-- [ ] Implement job processing with auto-discovery
-- [ ] Add worker health monitoring and graceful shutdown
-- [ ] Add WorkerApp to framework exports
-- [ ] Create worker startup script in `apps/example-bot/src/apps/worker.ts`
-- [ ] Test job processing pipeline between bot and worker
-- [ ] Add workspace scripts for running workers
+- [ ] Convert existing `BotApp.ts` to extend RoboCordApp
+- [ ] Implement Discord-specific template methods
+- [ ] Remove initialization duplication (inherited from base)
+- [ ] Add command and event auto-discovery integration
+- [ ] Test Discord integration with base class
+- [ ] Update example bot to use new inheritance pattern
+
+**Files to update:**
+- `packages/framework/src/apps/BotApp.ts`
+- `apps/example-bot/src/index.ts`
+
+### Task 11: WorkerApp Implementation  
+**Priority: HIGH**  
+**Dependencies: Task 9**  
+**Estimated Time: 3-4 hours**
+
+- [ ] Convert existing `WorkerApp.ts` to extend RoboCordApp
+- [ ] Implement queue-specific template methods
+- [ ] Remove initialization duplication (inherited from base)
+- [ ] Add job auto-discovery integration
+- [ ] Test job processing with base class
+- [ ] Create worker startup example
+
+**Files to update:**
+- `packages/framework/src/apps/WorkerApp.ts`
 
 **Files to create:**
-- `packages/framework/src/apps/WorkerApp.ts`
 - `apps/example-bot/src/apps/worker.ts`
 
-## Phase 7: Dependency Injection & Container
+## Phase 6: Example Implementation & Testing
 
-### Task 12: TSyringe Integration
+### Task 12: Complete Example Bot
 **Priority: MEDIUM**  
 **Dependencies: Task 11**  
 **Estimated Time: 4-5 hours**
 
-- [ ] Set up TSyringe container configuration in framework
-- [ ] Register all framework services in container
-- [ ] Create container setup utilities
-- [ ] Add DI exports to framework
-- [ ] Create user container setup in `apps/example-bot/src/container.ts`
-- [ ] Update all services to use dependency injection
-- [ ] Test DI throughout the application stack
+- [ ] Create comprehensive example commands in example bot
+- [ ] Create example jobs with different schemas in example bot
+- [ ] Create example events in example bot
+- [ ] Create example middleware in example bot
+- [ ] Create example custom entities extending base entities
+- [ ] Test full inheritance workflow with RoboCordApp
+- [ ] Update workspace scripts for complete development workflow
 
 **Files to create:**
-- `packages/framework/src/container.ts`
-- `apps/example-bot/src/container.ts`
+- Multiple example files in `apps/example-bot/src/`
+- Additional example entities, services, middleware
+- `apps/example-bot/src/apps/bot.ts`
+- `apps/example-bot/src/apps/worker.ts`
 
-## Phase 8: Hot Reloading & Development Experience
+## Phase 5: Advanced Features & Validation
 
-### Task 13: Hot Reloading System
-**Priority: MEDIUM**  
+### Task 13: Hot Reloading System (Optional)
+**Priority: LOW**  
 **Dependencies: Task 12**  
 **Estimated Time: 5-7 hours**
 
@@ -262,52 +263,64 @@
 **Files to create:**
 - `packages/framework/src/utils/hot-reload.ts`
 
-### Task 14: Framework Exports & Example Bot Completion
+### Task 14: Second Bot Application (Framework Validation)
 **Priority: MEDIUM**  
-**Dependencies: Task 13**  
-**Estimated Time: 3-4 hours**
-
-- [ ] Complete `packages/framework/src/index.ts` with all exports
-- [ ] Create comprehensive example commands in example bot
-- [ ] Create example jobs with different schemas in example bot
-- [ ] Create example events in example bot
-- [ ] Create example middleware in example bot
-- [ ] Add example custom entities to example bot
-- [ ] Update workspace scripts for complete development workflow
-
-**Files to create:**
-- Complete `packages/framework/src/index.ts`
-- Multiple example files in `apps/example-bot/src/`
-- Additional example entities, services, middleware
-
-## Phase 9: Additional Bot Applications & Framework Validation
-
-### Task 15: Second Bot Application
-**Priority: MEDIUM**  
-**Dependencies: Task 14**  
+**Dependencies: Task 12**  
 **Estimated Time: 4-5 hours**
 
 - [ ] Create `apps/moderation-bot/` with different use case
 - [ ] Set up moderation bot package.json and config
-- [ ] Create moderation-specific commands and jobs
-- [ ] Test framework flexibility with different bot patterns
+- [ ] Create moderation-specific commands and jobs using RoboCordApp
+- [ ] Test framework inheritance flexibility with different bot patterns
 - [ ] Add workspace scripts for moderation bot
-- [ ] Validate framework APIs work across different use cases
+- [ ] Validate RoboCordApp works across different use cases
 
 **Files to create:**
 - Complete `apps/moderation-bot/` structure
 - Moderation-specific commands, jobs, events
+- `apps/moderation-bot/src/apps/bot.ts` (extends RoboCordApp)
+- `apps/moderation-bot/src/apps/worker.ts` (extends RoboCordApp)
 
-### Task 16: Framework Publishing & Documentation
+### Task 15: Framework Exports & Documentation
+**Priority: MEDIUM**  
+**Dependencies: Task 14**  
+**Estimated Time: 3-4 hours**
+
+- [ ] Complete `packages/framework/src/index.ts` with all exports
+- [ ] Add comprehensive JSDoc comments to RoboCordApp and services
+- [ ] Update framework README with inheritance patterns
+- [ ] Create migration guides for inheritance approach
+- [ ] Update workspace scripts for complete development workflow
+
+**Files to update:**
+- `packages/framework/src/index.ts`
+- `packages/framework/README.md`
+
+## Phase 6: Future Enhancements
+
+### Task 16: ApiApp Implementation (Future)
+**Priority: LOW**  
+**Dependencies: Task 15**  
+**Estimated Time: 4-5 hours**
+
+- [ ] Create `ApiApp.ts` extending RoboCordApp
+- [ ] Implement HTTP server-specific template methods
+- [ ] Add route discovery and registration
+- [ ] Create example API bot application
+- [ ] Test three-app architecture (Bot, Worker, API)
+
+**Files to create:**
+- `packages/framework/src/apps/ApiApp.ts`
+- `apps/api-bot/` structure
+
+### Task 17: Framework Publishing & CI/CD
 **Priority: LOW**  
 **Dependencies: Task 15**  
 **Estimated Time: 4-5 hours**
 
 - [ ] Set up GitHub Package Registry configuration
 - [ ] Create publishing scripts and CI/CD workflows
-- [ ] Add comprehensive JSDoc comments to framework code
 - [ ] Create framework README with API documentation
-- [ ] Create migration guides and best practices
 - [ ] Test framework publishing to private registry
 - [ ] Performance testing and optimization across multiple bots
 
@@ -320,14 +333,16 @@
 
 ## 📋 Development Tips
 
-**Start Simple:** Begin with Task 1 and work sequentially. The monorepo structure is critical to get right first.
+**Dependency Order:** Build low-level utilities first (discovery, conventions), then services that depend on them, then the RoboCordApp that orchestrates everything.
 
 **Test Immediately:** After each framework task, test the changes with the example bot to ensure everything works.
 
-**Multiple Apps:** After Task 14, create additional bot applications to validate framework flexibility.
+**Template Method Pattern:** Focus on the RoboCordApp base class (Task 8) - this is the core architecture that eliminates duplication.
+
+**Inheritance Testing:** After Task 9-10, create additional bot applications to validate the inheritance approach works across different use cases.
 
 **Version Control:** Use workspace versioning to manage framework updates across multiple bot applications.
 
-**Total Estimated Time:** 65-80 hours of development work
+**Total Estimated Time:** 45-60 hours of development work (reduced due to inheritance eliminating duplication)
 
-The tasks are ordered for monorepo development where you build the framework package and test it immediately with bot applications, ensuring real-world validation at every step.
+The tasks are ordered for dependency-driven development: utilities → services → base class → concrete apps, ensuring each layer builds properly on the previous foundation.
