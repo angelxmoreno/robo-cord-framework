@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test';
-import { createConfig } from '@framework/utils';
 import { z } from 'zod';
+import { createConfig } from '../src/utils';
 
 describe('createConfig', () => {
     let originalEnv: typeof process.env;
