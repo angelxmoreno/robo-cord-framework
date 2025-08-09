@@ -84,4 +84,36 @@ describe('LoggerService', () => {
         expect(newLogger).toBeDefined();
         expect(loggerService.loggerCount).toBe(1);
     });
+
+    it('should work with transport configurations', () => {
+        const loggerService = new LoggerService({
+            level: 'info',
+            transport: {
+                target: 'pino-pretty',
+                options: {
+                    colorize: true,
+                    translateTime: 'HH:MM:ss',
+                },
+            },
+        });
+
+        expect(loggerService.baseLogger).toBeDefined();
+        expect(loggerService.baseLogger.level).toBe('info');
+
+        const childLogger = loggerService.getLogger('transport-test');
+        expect(childLogger).toBeDefined();
+        expect(childLogger.bindings()).toEqual({ name: 'transport-test' });
+    });
+
+    it('should work with basic configurations', () => {
+        const loggerService = new LoggerService({
+            level: 'debug',
+        });
+
+        expect(loggerService.baseLogger).toBeDefined();
+        expect(loggerService.baseLogger.level).toBe('debug');
+
+        const childLogger = loggerService.getLogger('basic-test');
+        expect(childLogger).toBeDefined();
+    });
 });

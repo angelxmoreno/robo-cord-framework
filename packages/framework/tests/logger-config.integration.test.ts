@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+import type { LoggerOptions } from 'pino';
 import { z } from 'zod';
 import { LoggerService } from '../src/services';
 import { createConfig } from '../src/utils';
@@ -48,7 +49,7 @@ describe('LoggerService Configuration Integration', () => {
         expect(config.logger.name).toBe('integration-test-logger');
 
         // Create LoggerService with config options
-        const loggerService = new LoggerService(config.logger);
+        const loggerService = new LoggerService(config.logger as LoggerOptions);
 
         expect(loggerService.baseLogger).toBeDefined();
         expect(loggerService.baseLogger.level).toBe('warn');
@@ -65,7 +66,7 @@ describe('LoggerService Configuration Integration', () => {
         expect(config.logger).toBeDefined();
         expect(config.logger.level).toBe('debug'); // Should be debug in test env
 
-        const loggerService = new LoggerService(config.logger);
+        const loggerService = new LoggerService(config.logger as LoggerOptions);
         expect(loggerService.baseLogger).toBeDefined();
     });
 });
