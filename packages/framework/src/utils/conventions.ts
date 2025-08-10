@@ -13,6 +13,7 @@
  * Converts a command class name to a command identifier.
  * @param className - The class name (e.g., "PingCommand")
  * @returns The command identifier (e.g., "ping")
+ * @throws Error if the className doesn't end with "Command"
  *
  * @example
  * commandNameToId("PingCommand") // "ping"
@@ -20,8 +21,17 @@
  * commandNameToId("ManageServerCommand") // "manage-server"
  */
 export function commandNameToId(className: string): string {
-    // Remove "Command" suffix and convert PascalCase to kebab-case
-    const nameWithoutSuffix = className.replace(/Command$/, '');
+    if (!className.endsWith('Command')) {
+        throw new Error(`Invalid command class name: "${className}". Command classes must end with "Command".`);
+    }
+
+    // Remove "Command" suffix using slice (more explicit and safe)
+    const nameWithoutSuffix = className.slice(0, -'Command'.length);
+
+    if (nameWithoutSuffix.length === 0) {
+        throw new Error(`Invalid command class name: "${className}". Cannot be just "Command".`);
+    }
+
     return pascalToKebab(nameWithoutSuffix);
 }
 
@@ -29,6 +39,7 @@ export function commandNameToId(className: string): string {
  * Converts a job class name to a job identifier.
  * @param className - The class name (e.g., "WelcomeJob")
  * @returns The job identifier (e.g., "welcome")
+ * @throws Error if the className doesn't end with "Job"
  *
  * @example
  * jobNameToId("WelcomeJob") // "welcome"
@@ -36,8 +47,17 @@ export function commandNameToId(className: string): string {
  * jobNameToId("SendNotificationJob") // "send-notification"
  */
 export function jobNameToId(className: string): string {
-    // Remove "Job" suffix and convert PascalCase to kebab-case
-    const nameWithoutSuffix = className.replace(/Job$/, '');
+    if (!className.endsWith('Job')) {
+        throw new Error(`Invalid job class name: "${className}". Job classes must end with "Job".`);
+    }
+
+    // Remove "Job" suffix using slice (more explicit and safe)
+    const nameWithoutSuffix = className.slice(0, -'Job'.length);
+
+    if (nameWithoutSuffix.length === 0) {
+        throw new Error(`Invalid job class name: "${className}". Cannot be just "Job".`);
+    }
+
     return pascalToKebab(nameWithoutSuffix);
 }
 
@@ -45,6 +65,7 @@ export function jobNameToId(className: string): string {
  * Converts an event class name to a Discord event name.
  * @param className - The class name (e.g., "MessageCreateEvent")
  * @returns The Discord event name (e.g., "messageCreate")
+ * @throws Error if the className doesn't end with "Event"
  *
  * @example
  * eventNameToDiscordEvent("MessageCreateEvent") // "messageCreate"
@@ -52,8 +73,17 @@ export function jobNameToId(className: string): string {
  * eventNameToDiscordEvent("ReadyEvent") // "ready"
  */
 export function eventNameToDiscordEvent(className: string): string {
-    // Remove "Event" suffix and convert to camelCase
-    const nameWithoutSuffix = className.replace(/Event$/, '');
+    if (!className.endsWith('Event')) {
+        throw new Error(`Invalid event class name: "${className}". Event classes must end with "Event".`);
+    }
+
+    // Remove "Event" suffix using slice (more explicit and safe)
+    const nameWithoutSuffix = className.slice(0, -'Event'.length);
+
+    if (nameWithoutSuffix.length === 0) {
+        throw new Error(`Invalid event class name: "${className}". Cannot be just "Event".`);
+    }
+
     return pascalToCamel(nameWithoutSuffix);
 }
 
@@ -61,6 +91,7 @@ export function eventNameToDiscordEvent(className: string): string {
  * Converts an entity class name to a TypeORM table name.
  * @param className - The class name (e.g., "UserEntity")
  * @returns The table name (e.g., "User")
+ * @throws Error if the className doesn't end with "Entity"
  *
  * @example
  * entityNameToTableName("UserEntity") // "User"
@@ -68,12 +99,23 @@ export function eventNameToDiscordEvent(className: string): string {
  * entityNameToTableName("CommandUsageEntity") // "CommandUsage"
  */
 export function entityNameToTableName(className: string): string {
-    // Remove "Entity" suffix, keep PascalCase
-    return className.replace(/Entity$/, '');
+    if (!className.endsWith('Entity')) {
+        throw new Error(`Invalid entity class name: "${className}". Entity classes must end with "Entity".`);
+    }
+
+    // Remove "Entity" suffix using slice (more explicit and safe)
+    const nameWithoutSuffix = className.slice(0, -'Entity'.length);
+
+    if (nameWithoutSuffix.length === 0) {
+        throw new Error(`Invalid entity class name: "${className}". Cannot be just "Entity".`);
+    }
+
+    return nameWithoutSuffix;
 }
 
 /**
  * Converts PascalCase to kebab-case.
+ * Handles acronyms and numbers correctly.
  * @param str - The PascalCase string
  * @returns The kebab-case string
  *
@@ -81,12 +123,19 @@ export function entityNameToTableName(className: string): string {
  * pascalToKebab("UserInfo") // "user-info"
  * pascalToKebab("ManageServer") // "manage-server"
  * pascalToKebab("Ping") // "ping"
+ * pascalToKebab("HTMLParser") // "html-parser"
+ * pascalToKebab("XMLHttpRequest") // "xml-http-request"
+ * pascalToKebab("API2Response") // "api2-response"
  */
 export function pascalToKebab(str: string): string {
-    return str
-        .replace(/([A-Z])/g, '-$1')
-        .toLowerCase()
-        .replace(/^-/, '');
+    return (
+        str
+            // Insert hyphen before uppercase letter that follows lowercase letter or digit
+            .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+            // Insert hyphen before uppercase letter that is followed by lowercase letter (handles acronyms)
+            .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
+            .toLowerCase()
+    );
 }
 
 /**

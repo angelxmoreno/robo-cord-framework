@@ -82,14 +82,8 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
             ...(process.env.DB_SYNCHRONIZE && { synchronize: process.env.DB_SYNCHRONIZE === 'true' }),
             ...(process.env.DB_LOGGING && { logging: process.env.DB_LOGGING === 'true' }),
         },
-        paths: {
-            // Paths will be resolved to absolute paths after merging
-            entities: './src/entities',
-            commands: './src/commands',
-            jobs: './src/jobs',
-            events: './src/events',
-            services: './src/services',
-        },
+        // Empty paths object - defaults come from PathsConfigSchema
+        paths: {},
         logger: createLoggerDefaults(isDevelopment) as LoggerOptions,
     };
 
