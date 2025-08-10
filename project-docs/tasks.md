@@ -68,18 +68,18 @@
 - [X] Update all documentation to use `DiscoveryService` API
 
 **Still Needed:**
-- [ ] Create `packages/framework/src/utils/conventions.ts` for naming patterns
-- [ ] Create `packages/framework/src/utils/automagic.ts` for auto-registration
+- [ ] Create `packages/framework/src/utils/automagic.ts` for auto-registration (deferred until DiscordService available)
 - [ ] Test utilities with example file structures in summarizer-bot
 
 **Files completed:**
 - ✅ `packages/framework/src/services/DiscoveryService.ts` - Full `DiscoveryService` implementation
 - ✅ `packages/framework/src/services/index.ts` - Added DiscoveryService export
 - ✅ `packages/framework/src/types/index.ts` - Added `ClassConstructor` type export
+- ✅ `packages/framework/src/utils/conventions.ts` - Naming pattern utilities
+- ✅ `packages/framework/src/utils/index.ts` - Added conventions export
 
 **Files still to create:**
-- `packages/framework/src/utils/conventions.ts` 
-- `packages/framework/src/utils/automagic.ts`
+- `packages/framework/src/utils/automagic.ts` (deferred - needs DiscordService)
 
 **Key Implementation Details:**
 - **Service Architecture**: `DiscoveryService` in services directory with logger state for debugging
