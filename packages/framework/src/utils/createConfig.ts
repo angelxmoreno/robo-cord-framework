@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { z } from 'zod';
 import { BaseConfigSchema } from '../schemas';
 import type { ExtendedConfig, LoggerOptions } from '../types';
+import { createStartupLogger } from './createStartupLogger';
 import { deepMerge } from './deepMerge';
 
 /**
@@ -51,13 +52,13 @@ function createLoggerDefaults(isDevelopment: boolean) {
  *
  * @param userSchema - A Zod schema defining the user-specific configuration.
  * @param overrides - Config overrides and defaults to merge with environment variables.
- * @param options - Configuration options. Set shouldExit to false to throw errors instead of exiting process.
+ * @param options - Configuration options. Set shouldExit to false to throw errors instead of exiting process. Set silent to true to suppress error logging.
  * @returns A validated, type-safe configuration object with resolved absolute paths.
  */
 export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     userSchema: T,
     overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>,
-    options: { shouldExit?: boolean } = { shouldExit: true }
+    options: { shouldExit?: boolean; silent?: boolean } = { shouldExit: true, silent: false }
 ): ExtendedConfig<z.infer<T>> {
     // Load .env file from the calling app's directory
     dotenv.config();
@@ -108,10 +109,11 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
         return resolvedConfig as ExtendedConfig<z.infer<T>>;
     } catch (error) {
         if (error instanceof z.ZodError) {
-            console.error('❌ Configuration validation failed!\n');
+            const logger = createStartupLogger(options.silent ? 'silent' : 'info');
+            logger.error('❌ Configuration validation failed!\n');
             for (const issue of error.issues) {
-                console.error(`  • Path: ${issue.path.join('.')}`);
-                console.error(`    Message: ${issue.message}\n`);
+                logger.error(`  • Path: ${issue.path.join('.')}`);
+                logger.error(`    Message: ${issue.message}\n`);
             }
             if (options.shouldExit) {
                 process.exit(1);
