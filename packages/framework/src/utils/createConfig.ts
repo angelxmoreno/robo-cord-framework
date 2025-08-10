@@ -3,7 +3,7 @@ import path from 'node:path';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 import { BaseConfigSchema } from '../schemas';
-import type { ExtendedConfig } from '../types';
+import type { ExtendedConfig, LoggerOptions } from '../types';
 import { deepMerge } from './deepMerge';
 
 /**
@@ -90,7 +90,7 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
             events: './src/events',
             services: './src/services',
         },
-        logger: createLoggerDefaults(isDevelopment) as any, // Logger type compatibility will be resolved by Zod parsing
+        logger: createLoggerDefaults(isDevelopment) as LoggerOptions,
     };
 
     // Deep merge base config with overrides

@@ -142,15 +142,15 @@ class BotApp extends RoboCordApp {
 
 The base class orchestrates but delegates to focused utilities:
 
-- **`utils/discovery.ts`**: File scanning and class loading
+- **`DiscoveryService`**: File scanning and class loading with logger integration
 - **`utils/conventions.ts`**: Naming patterns (PingCommand → "ping") 
 - **`utils/automagic.ts`**: Auto-registration logic
 - **`services/*`**: Individual service implementations
 
 ```typescript
-// RoboCordApp delegates to utilities using configurable paths
-protected async scanCommands(): Promise<any[]> {
-  return discoverCommands(this.config); // Uses config.paths.commands resolved to absolute path
+// RoboCordApp delegates to DiscoveryService using configurable paths
+protected async scanCommands(): Promise<ClassConstructor[]> {
+  return this.discoveryService.discoverCommands(); // Uses config.paths.commands resolved to absolute path
 }
 ```
 
@@ -235,10 +235,10 @@ abstract class RoboCordApp {
   protected abstract startApp(): Promise<void>
   protected abstract stopApp(): Promise<void>
   
-  // Utility methods (delegates to framework utilities using configurable paths)
-  protected async scanCommands(): Promise<any[]>
-  protected async scanJobs(): Promise<any[]>
-  protected async scanEvents(): Promise<any[]>
+  // Utility methods (delegates to DiscoveryService using configurable paths)
+  protected async scanCommands(): Promise<ClassConstructor[]>
+  protected async scanJobs(): Promise<ClassConstructor[]>
+  protected async scanEvents(): Promise<ClassConstructor[]>
 }
 ```
 

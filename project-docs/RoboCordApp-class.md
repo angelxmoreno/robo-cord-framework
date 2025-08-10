@@ -26,7 +26,7 @@ The **only differences** between apps are their specific services:
 
 ```typescript
 // packages/framework/src/apps/RoboCordApp.ts
-import { discoverEntities, discoverCommands, discoverJobs, discoverEvents } from '../utils/discovery';
+import { DiscoveryService } from '../services/DiscoveryService';
 import { DatabaseService } from '../services/DatabaseService';
 import { LoggerService } from '../services/LoggerService';
 import { UserEntity, GuildEntity, GuildMemberEntity, MessageEntity, LogEntity, CommandUsageEntity } from '../entities';
@@ -35,6 +35,7 @@ export abstract class RoboCordApp {
   protected dbService: DatabaseService;
   protected loggerService: LoggerService;
   protected logger: Logger;
+  protected discoveryService: DiscoveryService;
   
   constructor(protected config: ExtendedConfig) {}
   
@@ -61,14 +62,20 @@ export abstract class RoboCordApp {
     this.loggerService = new LoggerService(this.config.logger);
     this.logger = this.loggerService.getLogger(this.constructor.name);
     
-    // 2. Discover entities using framework utilities
+    // 2. Initialize discovery service
+    this.discoveryService = new DiscoveryService({ 
+      logger: this.logger, 
+      config: this.config 
+    });
+    
+    // 3. Discover entities using DiscoveryService
     const entities = await this.discoverAllEntities();
     
-    // 3. Initialize database with discovered entities
+    // 4. Initialize database with discovered entities
     this.dbService = new DatabaseService(this.config, entities);
     await this.dbService.start();
     
-    // 4. Setup other core services...
+    // 5. Setup other core services...
   }
   
   // Template methods - subclasses implement
@@ -76,23 +83,23 @@ export abstract class RoboCordApp {
   protected abstract startApp(): Promise<void>;
   protected abstract stopApp(): Promise<void>;
   
-  // Orchestration methods that delegate to framework utilities
-  private async discoverAllEntities(): Promise<any[]> {
+  // Orchestration methods that delegate to DiscoveryService
+  private async discoverAllEntities(): Promise<ClassConstructor[]> {
     const frameworkEntities = [UserEntity, GuildEntity, GuildMemberEntity, MessageEntity, LogEntity, CommandUsageEntity];
-    const userEntities = await discoverEntities(this.config); // Uses config.paths.entities resolved to absolute path
+    const userEntities = await this.discoveryService.discoverEntities(); // Uses config.paths.entities resolved to absolute path
     return [...frameworkEntities, ...userEntities];
   }
   
-  protected async scanCommands(): Promise<any[]> {
-    return discoverCommands(this.config); // Uses config.paths.commands resolved to absolute path
+  protected async scanCommands(): Promise<ClassConstructor[]> {
+    return this.discoveryService.discoverCommands(); // Uses config.paths.commands resolved to absolute path
   }
   
-  protected async scanJobs(): Promise<any[]> {
-    return discoverJobs(this.config); // Uses config.paths.jobs resolved to absolute path
+  protected async scanJobs(): Promise<ClassConstructor[]> {
+    return this.discoveryService.discoverJobs(); // Uses config.paths.jobs resolved to absolute path
   }
   
-  protected async scanEvents(): Promise<any[]> {
-    return discoverEvents(this.config); // Uses config.paths.events resolved to absolute path
+  protected async scanEvents(): Promise<ClassConstructor[]> {
+    return this.discoveryService.discoverEvents(); // Uses config.paths.events resolved to absolute path
   }
   
   async stop(): Promise<void> {
@@ -219,7 +226,7 @@ class BotApp extends RoboCordApp {
   }
   
   protected async startApp(): Promise<void> {
-    // RoboCordApp delegates to framework utilities
+    // RoboCordApp delegates to DiscoveryService
     const commands = await this.scanCommands(); // Uses config.paths.commands resolved to absolute path
     await this.commandService.registerCommands(commands);
   }

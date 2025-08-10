@@ -38,3 +38,9 @@ export type BaseConfig = z.infer<typeof BaseConfigSchema>;
  * Use this type when you need to reference a configuration that extends the base.
  */
 export type ExtendedConfig<T extends Record<string, unknown> = Record<string, unknown>> = BaseConfig & T;
+
+/**
+ * Type for class constructors discovered by the DiscoveryService.
+ * Represents classes that can be instantiated with the new operator.
+ */
+export type ClassConstructor = new (...args: unknown[]) => unknown;

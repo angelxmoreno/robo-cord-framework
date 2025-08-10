@@ -51,22 +51,43 @@
 ### Task 3: Discovery & Convention Utilities
 **Priority: HIGH**  
 **Dependencies: Task 2**  
-**Estimated Time: 4-5 hours**
+**Status: PARTIALLY COMPLETE** ✅  
+**Estimated Time: 4-5 hours** (3 hours completed)
 
-- [ ] Create `packages/framework/src/utils/discovery.ts` for file scanning
-- [ ] Implement entity discovery (`discoverEntities()`)
-- [ ] Implement command discovery (`discoverCommands()`)  
-- [ ] Implement job discovery (`discoverJobs()`)
-- [ ] Implement event discovery (`discoverEvents()`)
+**Discovery System Implementation:**
+- [X] Create `packages/framework/src/services/DiscoveryService.ts` with `DiscoveryService` class
+- [X] Implement entity discovery with `DiscoveryService.discoverEntities()` 
+- [X] Implement command discovery with `DiscoveryService.discoverCommands()`
+- [X] Implement job discovery with `DiscoveryService.discoverJobs()`
+- [X] Implement event discovery with `DiscoveryService.discoverEvents()`
+- [X] Add proper TypeScript types (`ClassConstructor`, type guards)
+- [X] Support both `.ts` and `.js` files for development and production
+- [X] Add comprehensive error handling and logging
+- [X] Create class validation methods for all discovery types
+- [X] Add utilities to framework exports
+- [X] Update all documentation to use `DiscoveryService` API
+
+**Still Needed:**
 - [ ] Create `packages/framework/src/utils/conventions.ts` for naming patterns
 - [ ] Create `packages/framework/src/utils/automagic.ts` for auto-registration
-- [ ] Test utilities with example file structures
-- [ ] Add utilities to framework exports
+- [ ] Test utilities with example file structures in summarizer-bot
 
-**Files to create:**
-- `packages/framework/src/utils/discovery.ts`
-- `packages/framework/src/utils/conventions.ts`
+**Files completed:**
+- ✅ `packages/framework/src/services/DiscoveryService.ts` - Full `DiscoveryService` implementation
+- ✅ `packages/framework/src/services/index.ts` - Added DiscoveryService export
+- ✅ `packages/framework/src/types/index.ts` - Added `ClassConstructor` type export
+
+**Files still to create:**
+- `packages/framework/src/utils/conventions.ts` 
 - `packages/framework/src/utils/automagic.ts`
+
+**Key Implementation Details:**
+- **Service Architecture**: `DiscoveryService` in services directory with logger state for debugging
+- **Configurable Paths**: Uses `config.paths.*` resolved to absolute paths by `createConfig()`
+- **Type Safety**: All methods return `ClassConstructor[]` with proper type guards
+- **Convention-based**: Discovers files matching `*Entity.{ts,js}`, `*Command.{ts,js}`, etc.
+- **Production Ready**: Supports both TypeScript development and compiled JavaScript
+- **Framework Service**: Exported from `services/index.ts` alongside other framework services
 
 ### Task 4: Framework Database Entities & Connection
 **Priority: HIGH**  
