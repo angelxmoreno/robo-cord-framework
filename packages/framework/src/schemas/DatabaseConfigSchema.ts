@@ -6,10 +6,10 @@ import { z } from 'zod';
  */
 export const DatabaseConfigSchema = z.object({
     host: z.string().default('localhost'),
-    port: z.number().default(5432),
+    port: z.coerce.number().int().min(1).max(65535).default(5432),
     database: z.string().min(1, 'Database name is required'),
     username: z.string().min(1, 'Database username is required'),
     password: z.string().min(1, 'Database password is required'),
-    synchronize: z.boolean().optional(),
-    logging: z.boolean().optional(),
+    synchronize: z.coerce.boolean().default(false),
+    logging: z.coerce.boolean().default(false),
 });

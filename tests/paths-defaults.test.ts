@@ -11,7 +11,7 @@ describe('Paths Configuration Defaults', () => {
         const config = createConfig(
             TestSchema,
             {
-                discord: { token: 'test-token', clientId: 'test-client-id' },
+                discord: { token: 'test-token', clientId: '123456789012345678' },
                 database: {
                     host: 'localhost',
                     port: 5432,
@@ -39,7 +39,7 @@ describe('Paths Configuration Defaults', () => {
         const config = createConfig(
             TestSchema,
             {
-                discord: { token: 'test-token', clientId: 'test-client-id' },
+                discord: { token: 'test-token', clientId: '123456789012345678' },
                 database: {
                     host: 'localhost',
                     port: 5432,

@@ -8,10 +8,24 @@ import { PathsConfigSchema } from './PathsConfigSchema';
  * Defines the base configuration schema required by the framework.
  * Composed of modular configuration schemas for maintainability.
  */
-export const BaseConfigSchema = z.object({
-    isDevelopment: z.boolean().default(true),
-    discord: DiscordConfigSchema,
-    database: DatabaseConfigSchema,
-    paths: PathsConfigSchema,
-    logger: LoggerOptionsSchema,
-});
+export const BaseConfigSchema = z
+    .object({
+        isDevelopment: z.boolean().default(true),
+        discord: DiscordConfigSchema,
+        database: DatabaseConfigSchema,
+        paths: PathsConfigSchema,
+        logger: LoggerOptionsSchema,
+    })
+    .refine(
+        (data) => {
+            // Prevent database synchronization in production environments
+            if (!data.isDevelopment && data.database.synchronize === true) {
+                return false;
+            }
+            return true;
+        },
+        {
+            message: 'Database synchronization must be disabled in production environments (isDevelopment: false)',
+            path: ['database', 'synchronize'],
+        }
+    );
