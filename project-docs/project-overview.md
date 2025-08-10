@@ -4,7 +4,7 @@ A production-ready Discord bot framework built with TypeScript, featuring databa
 
 ## 🚀 Features
 
-- **Two-App Architecture**: Separate bot and worker processes sharing resources
+- **Three-App Architecture**: Bot, Worker, and API applications with shared infrastructure via inheritance
 - **Database Integration**: PostgreSQL with TypeORM and auto-migrations (in development)
 - **Worker Queue System**: Background job processing with pg-boss (planned)
 - **Slash Command Routing**: Auto-discovered modular command system (planned)
@@ -48,8 +48,10 @@ discord-bot-framework/
 │   └── framework/                          # Framework package
 │       ├── src/
 │       │   ├── apps/
-│       │   │   ├── BotApp.ts              # Main bot application class
-│       │   │   └── WorkerApp.ts           # Worker queue application class
+│       │   │   ├── RoboCordApp.ts          # Abstract base class with shared logic
+│       │   │   ├── BotApp.ts               # Discord bot application (extends RoboCordApp)
+│       │   │   ├── WorkerApp.ts            # Worker queue application (extends RoboCordApp)
+│       │   │   └── ApiApp.ts               # HTTP API application (extends RoboCordApp)
 │       │   ├── base/
 │       │   │   ├── SlashCommand.ts        # Base slash command class
 │       │   │   ├── BaseJob.ts             # Base job processor class
@@ -291,8 +293,8 @@ export class WelcomeJob extends BaseJob<typeof WelcomeJobSchema> {
 
 ### Bot Application Startup
 ```typescript
-// apps/example-bot/src/index.ts
-import { createConfig } from '@robo-cord/framework';
+// apps/example-bot/src/apps/bot.ts
+import { BotApp, createConfig } from '@robo-cord/framework';
 import { z } from 'zod';
 
 const ConfigSchema = z.object({
@@ -300,24 +302,97 @@ const ConfigSchema = z.object({
   customSetting: z.string().optional(),
 });
 
-// Using the enhanced createConfig with overrides
+// Create configuration with custom schema
 const config = createConfig(ConfigSchema, {
   ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
   customSetting: 'default-value',
-  // Override base config if needed
-  discord: {
-    token: process.env.CUSTOM_DISCORD_TOKEN,
-  }
-}, {
-  shouldExit: false // For library usage
 });
 
-// Bot logic here...
+// Simple inheritance-based startup
+const bot = new BotApp(config);
+await bot.start(); // All initialization happens in RoboCordApp base class
+
+// Bot automatically:
+// - Initializes logger and database with discovered entities
+// - Connects to Discord
+// - Discovers and registers commands from ./src/commands/
+// - Sets up event handlers from ./src/events/
 ```
+
+### Worker Application Startup
+```typescript
+// apps/example-bot/src/apps/worker.ts
+import { WorkerApp, createConfig } from '@robo-cord/framework';
+import { ConfigSchema } from '../config';
+
+const config = createConfig(ConfigSchema);
+
+// Worker uses same base class with different template methods
+const worker = new WorkerApp(config);
+await worker.start();
+
+// Worker automatically:
+// - Initializes logger and database (shared with bot)
+// - Connects to job queue
+// - Discovers and registers jobs from ./src/jobs/
+// - Starts processing background tasks
+```
+
+### API Application Startup (Future)
+```typescript
+// apps/example-bot/src/apps/api.ts
+import { ApiApp, createConfig } from '@robo-cord/framework';
+
+const config = createConfig(ConfigSchema);
+
+// API server uses same infrastructure
+const api = new ApiApp(config);
+await api.start();
+
+// API automatically:
+// - Initializes logger and database (shared with bot/worker)
+// - Starts HTTP server
+// - Discovers and registers routes from ./src/routes/
+// - Sets up middleware from ./src/middleware/
+```
+
+## 🏗️ Inheritance-Based Architecture
+
+The framework uses an abstract `RoboCordApp` base class that eliminates 98% of code duplication across different application types:
+
+### Template Method Pattern
+```typescript
+// All apps share the same initialization sequence
+abstract class RoboCordApp {
+  async start(): Promise<void> {
+    await this.initializeCore();     // 98% shared logic
+    await this.initializeSpecificServices(); // 2% app-specific 
+    await this.startApp();           // App-specific startup
+  }
+  
+  // Template methods - implemented by concrete apps
+  protected abstract initializeSpecificServices(): Promise<void>;
+  protected abstract startApp(): Promise<void>;
+}
+```
+
+### Service Discovery Integration
+The base class orchestrates but delegates to framework utilities:
+- Uses `utils/discovery.ts` for file scanning and class loading
+- Uses `utils/conventions.ts` for naming patterns (PingCommand → "ping")
+- Uses `utils/automagic.ts` for auto-registration logic
+- Creates services with discovered entities and configurations
+
+### Benefits Over Alternative Architectures
+1. **No Code Duplication**: Shared initialization across Bot, Worker, API
+2. **Direct Service Access**: No framework container indirection
+3. **Simple Developer Experience**: One line to start any app type
+4. **Template Method Pattern**: Clean separation of shared vs specific logic
+5. **Maintains Current Architecture**: Enhances existing service-oriented design
 
 ## 🔧 Enhanced Configuration System
 
-The framework now features an improved configuration system with several key enhancements:
+The framework features an improved configuration system with several key enhancements:
 
 ### Configuration Overrides
 Instead of complex schema preprocessing, use the cleaner `overrides` parameter:
