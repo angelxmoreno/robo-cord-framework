@@ -101,9 +101,9 @@ export abstract class RoboCordApp {
     await this.stopApp(); // App-specific cleanup
     
     if (this.dbService) await this.dbService.stop();
-    if (this.loggerService) this.loggerService.clearLoggers();
     
     this.logger.info(`${this.constructor.name} stopped`);
+    if (this.loggerService) this.loggerService.clearLoggers();
   }
 }
 ```

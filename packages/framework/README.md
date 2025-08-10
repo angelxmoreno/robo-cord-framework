@@ -287,7 +287,7 @@ abstract class BaseJob<T extends z.ZodObject<z.ZodRawShape>> {
 function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
   userSchema: T,
   overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>,
-  options?: { shouldExit?: boolean }
+  options: { shouldExit?: boolean } = { shouldExit: true }
 ): z.infer<T> & z.infer<typeof BaseConfigSchema>
 ```
 
