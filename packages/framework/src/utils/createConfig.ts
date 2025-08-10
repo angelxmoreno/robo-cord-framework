@@ -3,6 +3,8 @@ import path from 'node:path';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 import { BaseConfigSchema } from '../schemas';
+import type { ExtendedConfig, LoggerOptions } from '../types';
+import { createStartupLogger } from './createStartupLogger';
 import { deepMerge } from './deepMerge';
 
 /**
@@ -45,18 +47,19 @@ function createLoggerDefaults(isDevelopment: boolean) {
  *
  * This function merges the framework's base configuration requirements with a
  * user-provided Zod schema. It then parses environment variables against the
- * combined schema, providing a type-safe configuration object.
+ * combined schema, providing a type-safe configuration object. All paths are
+ * resolved to absolute paths based on the calling application's directory.
  *
  * @param userSchema - A Zod schema defining the user-specific configuration.
- * @param overrides - config overrides
- * @param options - Configuration options. Set shouldExit to false to throw errors instead of exiting process.
- * @returns A validated, type-safe configuration object.
+ * @param overrides - Config overrides and defaults to merge with environment variables.
+ * @param options - Configuration options. Set shouldExit to false to throw errors instead of exiting process. Set silent to true to suppress error logging.
+ * @returns A validated, type-safe configuration object with resolved absolute paths.
  */
 export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     userSchema: T,
     overrides?: Partial<z.infer<T> & z.infer<typeof BaseConfigSchema>>,
-    options: { shouldExit?: boolean } = { shouldExit: true }
-): z.infer<T> & z.infer<typeof BaseConfigSchema> {
+    options: { shouldExit?: boolean; silent?: boolean } = { shouldExit: true, silent: false }
+): ExtendedConfig<z.infer<T>> {
     // Load .env file from the calling app's directory
     dotenv.config();
 
@@ -68,6 +71,8 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
         isDevelopment,
         discord: {
             ...(process.env.DISCORD_TOKEN && { token: process.env.DISCORD_TOKEN }),
+            ...(process.env.DISCORD_CLIENT_ID && { clientId: process.env.DISCORD_CLIENT_ID }),
+            ...(process.env.DISCORD_GUILD_ID && { guildId: process.env.DISCORD_GUILD_ID }),
         },
         database: {
             ...(process.env.DB_HOST && { host: process.env.DB_HOST }),
@@ -75,8 +80,12 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
             ...(process.env.DB_DATABASE && { database: process.env.DB_DATABASE }),
             ...(process.env.DB_USERNAME && { username: process.env.DB_USERNAME }),
             ...(process.env.DB_PASSWORD && { password: process.env.DB_PASSWORD }),
+            ...(process.env.DB_SYNCHRONIZE && { synchronize: process.env.DB_SYNCHRONIZE === 'true' }),
+            ...(process.env.DB_LOGGING && { logging: process.env.DB_LOGGING === 'true' }),
         },
-        logger: createLoggerDefaults(isDevelopment) as z.infer<typeof BaseConfigSchema>['logger'],
+        // Empty paths object - defaults come from PathsConfigSchema
+        paths: {},
+        logger: createLoggerDefaults(isDevelopment) as LoggerOptions,
     };
 
     // Deep merge base config with overrides
@@ -85,13 +94,26 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     try {
         const parsedConfig = MergedSchema.parse(mergedConfig);
 
-        return parsedConfig as z.infer<typeof MergedSchema>;
+        // Resolve relative paths to absolute paths based on calling app's directory
+        const resolvedConfig = {
+            ...parsedConfig,
+            paths: {
+                entities: path.resolve(process.cwd(), parsedConfig.paths.entities),
+                commands: path.resolve(process.cwd(), parsedConfig.paths.commands),
+                jobs: path.resolve(process.cwd(), parsedConfig.paths.jobs),
+                events: path.resolve(process.cwd(), parsedConfig.paths.events),
+                services: path.resolve(process.cwd(), parsedConfig.paths.services),
+            },
+        };
+
+        return resolvedConfig as ExtendedConfig<z.infer<T>>;
     } catch (error) {
         if (error instanceof z.ZodError) {
-            console.error('❌ Configuration validation failed!\n');
+            const logger = createStartupLogger(options.silent ? 'silent' : 'info');
+            logger.error('❌ Configuration validation failed!\n');
             for (const issue of error.issues) {
-                console.error(`  • Path: ${issue.path.join('.')}`);
-                console.error(`    Message: ${issue.message}\n`);
+                logger.error(`  • Path: ${issue.path.join('.')}`);
+                logger.error(`    Message: ${issue.message}\n`);
             }
             if (options.shouldExit) {
                 process.exit(1);

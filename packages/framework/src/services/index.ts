@@ -3,6 +3,7 @@
 
 // Currently implemented services
 export { DatabaseService } from './DatabaseService';
+export { DiscoveryService } from './DiscoveryService';
 export { LoggerService } from './LoggerService';
 
 // TODO: Export other services when implemented

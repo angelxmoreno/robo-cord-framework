@@ -1,23 +1,31 @@
 import { z } from 'zod';
+import { DatabaseConfigSchema } from './DatabaseConfigSchema';
+import { DiscordConfigSchema } from './DiscordConfigSchema';
 import { LoggerOptionsSchema } from './LoggerOptionsSchema';
+import { PathsConfigSchema } from './PathsConfigSchema';
 
 /**
  * Defines the base configuration schema required by the framework.
- * These are the minimum environment variables needed for the bot to start.
+ * Composed of modular configuration schemas for maintainability.
  */
-export const BaseConfigSchema = z.object({
-    isDevelopment: z.boolean().default(true),
-    discord: z.object({
-        token: z.string().min(1, 'Discord bot token is required'),
-    }),
-    database: z.object({
-        host: z.string().default('localhost'),
-        port: z.number().default(5432),
-        database: z.string().min(1, 'Database name is required'),
-        username: z.string().min(1, 'Database username is required'),
-        password: z.string().min(1, 'Database password is required'),
-        synchronize: z.boolean().optional(),
-        logging: z.boolean().optional(),
-    }),
-    logger: LoggerOptionsSchema,
-});
+export const BaseConfigSchema = z
+    .object({
+        isDevelopment: z.boolean().default(true),
+        discord: DiscordConfigSchema,
+        database: DatabaseConfigSchema,
+        paths: PathsConfigSchema,
+        logger: LoggerOptionsSchema,
+    })
+    .refine(
+        (data) => {
+            // Prevent database synchronization in production environments
+            if (!data.isDevelopment && data.database.synchronize === true) {
+                return false;
+            }
+            return true;
+        },
+        {
+            message: 'Database synchronization must be disabled in production environments (isDevelopment: false)',
+            path: ['database', 'synchronize'],
+        }
+    );

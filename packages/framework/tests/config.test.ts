@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 import { createConfig } from '../src/utils';
 
@@ -37,12 +37,8 @@ describe('createConfig', () => {
     ) => {
         envSetup();
 
-        const consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
-
-        expect(() => createConfig(schema, overrides, { shouldExit: false })).toThrow();
-        expect(consoleSpy).toHaveBeenCalledWith('❌ Configuration validation failed!\n');
-
-        consoleSpy.mockRestore();
+        // Use silent option to suppress error output during tests
+        expect(() => createConfig(schema, overrides, { shouldExit: false, silent: true })).toThrow();
     };
 
     beforeEach(() => {
@@ -134,6 +130,8 @@ describe('createConfig', () => {
                 database: 'override_db',
                 username: 'override_user',
                 password: 'override_pass',
+                synchronize: true,
+                logging: true,
             },
         };
 
@@ -146,6 +144,8 @@ describe('createConfig', () => {
         expect(config.database.database).toBe('override_db');
         expect(config.database.username).toBe('override_user');
         expect(config.database.password).toBe('override_pass');
+        expect(config.database.synchronize).toBe(true);
+        expect(config.database.logging).toBe(true);
     });
 
     it('should work when user schema field is provided via environment variables', () => {
@@ -163,12 +163,8 @@ describe('createConfig', () => {
     });
 
     it('should fail gracefully when required user schema fields are missing and no overrides provided', () => {
-        const consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
-
-        expect(() => createConfig(createUserSchema(), undefined, { shouldExit: false })).toThrow();
-        expect(consoleSpy).toHaveBeenCalledWith('❌ Configuration validation failed!\n');
-
-        consoleSpy.mockRestore();
+        // Use silent option to suppress error output during tests
+        expect(() => createConfig(createUserSchema(), undefined, { shouldExit: false, silent: true })).toThrow();
     });
 
     it('should prioritize overrides over environment variables', () => {

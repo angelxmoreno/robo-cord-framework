@@ -230,22 +230,26 @@ export class UserSettingsEntity extends BaseUserSettingsEntity {
 The abstract `RoboCordApp` base class handles entity discovery and registration automatically:
 
 1. **Framework Entities**: Always included (UserEntity, GuildEntity, etc.)
-2. **User Entities**: Discovered from configurable path (default: `./src/entities/`) using `utils/discovery.ts`
+2. **User Entities**: Discovered from configurable path (default: `./src/entities/`) using `DiscoveryService`
 3. **Combined Registration**: All entities passed to DatabaseService constructor
 4. **TypeORM Configuration**: DataSource created with discovered entities
 
 ### Discovery Process
 ```typescript
 // In RoboCordApp.initializeCore()
-private async discoverAllEntities(): Promise<any[]> {
+private async discoverAllEntities(): Promise<ClassConstructor[]> {
   const frameworkEntities = [
     UserEntity, GuildEntity, GuildMemberEntity, 
     MessageEntity, LogEntity, CommandUsageEntity
   ];
   
-  // Uses utils/discovery.ts with configurable path from config.paths.entities
+  // Uses DiscoveryService with configurable path from config.paths.entities
   // Path is resolved to absolute path by createConfig()
-  const userEntities = await discoverEntities(this.config);
+  const discoveryService = new DiscoveryService({ 
+    logger: this.logger, 
+    config: this.config 
+  });
+  const userEntities = await discoveryService.discoverEntities();
   
   return [...frameworkEntities, ...userEntities];
 }

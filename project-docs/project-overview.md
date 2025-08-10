@@ -378,7 +378,7 @@ abstract class RoboCordApp {
 
 ### Service Discovery Integration
 The base class orchestrates but delegates to framework utilities:
-- Uses `utils/discovery.ts` for file scanning and class loading
+- Uses `DiscoveryService` for file scanning and class loading
 - Uses `utils/conventions.ts` for naming patterns (PingCommand → "ping")
 - Uses `utils/automagic.ts` for auto-registration logic
 - Creates services with discovered entities and configurations
