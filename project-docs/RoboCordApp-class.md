@@ -79,20 +79,20 @@ export abstract class RoboCordApp {
   // Orchestration methods that delegate to framework utilities
   private async discoverAllEntities(): Promise<any[]> {
     const frameworkEntities = [UserEntity, GuildEntity, GuildMemberEntity, MessageEntity, LogEntity, CommandUsageEntity];
-    const userEntities = await discoverEntities('./src/entities'); // Uses utils/discovery.ts
+    const userEntities = await discoverEntities(this.config); // Uses config.paths.entities resolved to absolute path
     return [...frameworkEntities, ...userEntities];
   }
   
-  protected async scanCommands(path: string): Promise<any[]> {
-    return discoverCommands(path); // Delegates to utils/discovery.ts
+  protected async scanCommands(): Promise<any[]> {
+    return discoverCommands(this.config); // Uses config.paths.commands resolved to absolute path
   }
   
-  protected async scanJobs(path: string): Promise<any[]> {
-    return discoverJobs(path); // Delegates to utils/discovery.ts
+  protected async scanJobs(): Promise<any[]> {
+    return discoverJobs(this.config); // Uses config.paths.jobs resolved to absolute path
   }
   
-  protected async scanEvents(path: string): Promise<any[]> {
-    return discoverEvents(path); // Delegates to utils/discovery.ts
+  protected async scanEvents(): Promise<any[]> {
+    return discoverEvents(this.config); // Uses config.paths.events resolved to absolute path
   }
   
   async stop(): Promise<void> {
@@ -126,7 +126,7 @@ export class BotApp extends RoboCordApp {
   
   protected async startApp(): Promise<void> {
     // Discover and register commands
-    const commands = await this.scanCommands('./src/commands');
+    const commands = await this.scanCommands();
     await this.commandService.registerCommands(commands);
     
     this.logger.info('Discord bot is ready');
@@ -151,7 +151,7 @@ export class WorkerApp extends RoboCordApp {
   
   protected async startApp(): Promise<void> {
     // Discover and register jobs
-    const jobs = await this.scanJobs('./src/jobs');
+    const jobs = await this.scanJobs();
     await this.queueService.registerJobs(jobs);
     
     this.logger.info('Worker is processing jobs');
@@ -220,7 +220,7 @@ class BotApp extends RoboCordApp {
   
   protected async startApp(): Promise<void> {
     // RoboCordApp delegates to framework utilities
-    const commands = await this.scanCommands('./src/commands'); // Uses utils/discovery.ts
+    const commands = await this.scanCommands(); // Uses config.paths.commands resolved to absolute path
     await this.commandService.registerCommands(commands);
   }
 }

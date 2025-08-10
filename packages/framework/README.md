@@ -148,9 +148,9 @@ The base class orchestrates but delegates to focused utilities:
 - **`services/*`**: Individual service implementations
 
 ```typescript
-// RoboCordApp delegates to utilities
-protected async scanCommands(path: string): Promise<any[]> {
-  return discoverCommands(path); // Uses utils/discovery.ts
+// RoboCordApp delegates to utilities using configurable paths
+protected async scanCommands(): Promise<any[]> {
+  return discoverCommands(this.config); // Uses config.paths.commands resolved to absolute path
 }
 ```
 
@@ -194,6 +194,28 @@ The framework automatically includes:
 - **Discord**: `token` (required), `clientId`, `guildId`
 - **Database**: `host`, `port`, `username`, `password`, `database`
 - **Logger**: Level, transports, and formatting options
+- **Paths**: Discovery paths for entities, commands, jobs, events, and services
+
+### Path Configuration
+
+```typescript
+// Default paths (all resolved to absolute paths)
+const config = createConfig(MyConfigSchema);
+// config.paths.entities   -> /absolute/path/to/src/entities
+// config.paths.commands   -> /absolute/path/to/src/commands  
+// config.paths.jobs       -> /absolute/path/to/src/jobs
+// config.paths.events     -> /absolute/path/to/src/events
+// config.paths.services   -> /absolute/path/to/src/services
+
+// Override paths if needed
+const config = createConfig(MyConfigSchema, {
+  paths: {
+    commands: './custom/commands/dir',
+    jobs: './custom/jobs/dir',
+    // entities, events, services use defaults
+  }
+});
+```
 
 ## API Reference
 
@@ -213,10 +235,10 @@ abstract class RoboCordApp {
   protected abstract startApp(): Promise<void>
   protected abstract stopApp(): Promise<void>
   
-  // Utility methods (delegates to framework utilities)
-  protected async scanCommands(path: string): Promise<any[]>
-  protected async scanJobs(path: string): Promise<any[]>
-  protected async scanEvents(path: string): Promise<any[]>
+  // Utility methods (delegates to framework utilities using configurable paths)
+  protected async scanCommands(): Promise<any[]>
+  protected async scanJobs(): Promise<any[]>
+  protected async scanEvents(): Promise<any[]>
 }
 ```
 
@@ -286,9 +308,9 @@ export class ApiApp extends RoboCordApp {
   }
   
   protected async startApp(): Promise<void> {
-    // Discover and register routes
-    const routes = await this.scanRoutes('./src/routes');
-    this.httpServer.registerRoutes(routes);
+    // Discover and register routes (future functionality)
+    // const routes = await this.scanRoutes(); // Will use config.paths.routes
+    // this.httpServer.registerRoutes(routes);
     await this.httpServer.listen();
   }
   
