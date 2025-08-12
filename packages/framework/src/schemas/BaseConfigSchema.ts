@@ -19,10 +19,7 @@ export const BaseConfigSchema = z
     .refine(
         (data) => {
             // Prevent database synchronization in production environments
-            if (!data.isDevelopment && data.database.synchronize === true) {
-                return false;
-            }
-            return true;
+            return !(!data.isDevelopment && data.database.synchronize);
         },
         {
             message: 'Database synchronization must be disabled in production environments (isDevelopment: false)',

@@ -53,7 +53,7 @@ discord-bot-framework/
 │       │   │   ├── WorkerApp.ts            # Worker queue application (extends RoboCordApp)
 │       │   │   └── ApiApp.ts               # HTTP API application (extends RoboCordApp)
 │       │   ├── base/
-│       │   │   ├── SlashCommand.ts        # Base slash command class
+│       │   │   ├── BaseSlashCommand.ts        # Base slash command class
 │       │   │   ├── BaseJob.ts             # Base job processor class
 │       │   │   ├── BaseEvent.ts           # Base Discord event handler
 │       │   │   └── BaseMiddleware.ts      # Base command middleware
