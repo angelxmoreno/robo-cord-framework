@@ -40,13 +40,24 @@ export class DiscordService {
             // Set up error handlers before connecting
             this.setupClientErrorHandlers();
 
-            // Discover and register commands and event handlers
-            this.logger.info('Discovering and registering commands and event handlers');
-            await this.discoverAndRegister();
-
-            // Connect to Discord
+            // Connect to Discord first
             this.logger.info('Logging in to Discord');
             await this.discordClient.login(this.config.discord.token);
+
+            // Wait for the client to be ready
+            if (!this.discordClient.isReady()) {
+                this.logger.info('Waiting for Discord client to be ready');
+                await new Promise<void>((resolve) => {
+                    this.discordClient.once('ready', () => {
+                        this.logger.info('Discord client is ready');
+                        resolve();
+                    });
+                });
+            }
+
+            // Now discover and register commands and event handlers (needs client.application to be available)
+            this.logger.info('Discovering and registering commands and event handlers');
+            await this.discoverAndRegister();
 
             this.logger.info('Successfully connected to Discord');
         } catch (error) {
@@ -114,14 +125,14 @@ export class DiscordService {
             this.logger.warn({ info }, 'Discord client warning');
         });
 
-        // Handle disconnections
-        this.discordClient.on('disconnect', (event) => {
-            this.logger.warn({ event }, 'Discord client disconnected');
+        // Handle shard disconnections
+        this.discordClient.on('shardDisconnect', (event, shardId) => {
+            this.logger.warn({ event, shardId }, `Discord shard ${shardId} disconnected`);
         });
 
-        // Handle reconnection
-        this.discordClient.on('reconnecting', () => {
-            this.logger.info('Discord client reconnecting');
+        // Handle shard reconnection
+        this.discordClient.on('shardReconnecting', (shardId) => {
+            this.logger.info({ shardId }, `Discord shard ${shardId} reconnecting`);
         });
     }
 

@@ -63,15 +63,7 @@ export class DiscoveryService {
         }
 
         // Check if it extends BaseSlashCommand
-        let currentProto = exportedItem.prototype;
-        while (currentProto) {
-            if (currentProto.constructor === BaseSlashCommand) {
-                return true;
-            }
-            currentProto = Object.getPrototypeOf(currentProto);
-        }
-
-        return false;
+        return Object.prototype.isPrototypeOf.call(BaseSlashCommand.prototype, exportedItem.prototype);
     }
 
     /**
@@ -96,15 +88,7 @@ export class DiscoveryService {
         }
 
         // Check if it extends BaseEventHandler
-        let currentProto = exportedItem.prototype;
-        while (currentProto) {
-            if (currentProto.constructor === BaseEventHandler) {
-                return true;
-            }
-            currentProto = Object.getPrototypeOf(currentProto);
-        }
-
-        return false;
+        return Object.prototype.isPrototypeOf.call(BaseEventHandler.prototype, exportedItem.prototype);
     }
 
     /**

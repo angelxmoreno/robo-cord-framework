@@ -1,4 +1,4 @@
-import type { ApplicationIntegrationType, InteractionContextType, PermissionResolvable } from 'discord.js';
+import type { ApplicationIntegrationType, InteractionContextType } from 'discord.js';
 import { type ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import type { Logger } from 'pino';
 import type { BaseConfig } from '../types';
@@ -40,7 +40,7 @@ export abstract class BaseSlashCommand {
      * Default member permissions required to use this command.
      * If not specified, the command is available to everyone.
      */
-    readonly defaultMemberPermissions?: PermissionResolvable;
+    readonly defaultMemberPermissions?: string | number | bigint | null;
 
     /**
      * Contexts where this command can be used.
@@ -74,7 +74,7 @@ export abstract class BaseSlashCommand {
         const command = new SlashCommandBuilder().setName(this.commandName).setDescription(this.description);
 
         if (this.defaultMemberPermissions !== undefined) {
-            command.setDefaultMemberPermissions(this.defaultMemberPermissions as string | number | bigint | null);
+            command.setDefaultMemberPermissions(this.defaultMemberPermissions);
         }
 
         if (this.contexts !== undefined) {
@@ -96,23 +96,23 @@ export abstract class BaseSlashCommand {
      * Hook called before command execution.
      * Use for validation, permission checks, etc.
      */
-    protected async beforeExecute?(interaction: ChatInputCommandInteraction): Promise<void>;
+    protected beforeExecute?: (interaction: ChatInputCommandInteraction) => Promise<void>;
 
     /**
      * Hook called after successful command execution.
      * Use for cleanup, logging, analytics, etc.
      */
-    protected async afterExecute?(interaction: ChatInputCommandInteraction): Promise<void>;
+    protected afterExecute?: (interaction: ChatInputCommandInteraction) => Promise<void>;
 
     /**
      * Hook called when command execution throws an error.
      * Use for error handling, user feedback, etc.
      */
-    protected async onError?(error: Error, interaction: ChatInputCommandInteraction): Promise<void>;
+    protected onError?: (error: Error, interaction: ChatInputCommandInteraction) => Promise<void>;
 
     /**
      * Validates command configuration and options.
      * Called during command registration.
      */
-    protected validateOptions?(): void;
+    protected validateOptions?: () => void;
 }

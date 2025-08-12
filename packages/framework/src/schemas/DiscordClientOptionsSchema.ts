@@ -10,18 +10,12 @@ export const DiscordClientOptionsSchema = z
     .object({
         /**
          * Gateway intents to enable for this connection.
-         * Can be an array of intent strings/numbers, a single number, or omitted for empty array.
+         * Can be an array of intent strings/numbers or a single number.
          *
          * @example ['Guilds', 'GuildMessages', 'MessageContent']
          * @example 32767 // All intents
          */
-        intents: z
-            .union([
-                z.array(z.union([z.string(), z.number()])),
-                z.number(),
-                z.unknown(), // Allow any type to be flexible with Discord.js types
-            ])
-            .optional(),
+        intents: z.union([z.array(z.union([z.string(), z.number()])), z.number()]).default([]),
 
         /**
          * Initial presence data for the client.
@@ -37,6 +31,17 @@ export const DiscordClientOptionsSchema = z
                             type: z.number().int().min(0).max(5).optional(), // ActivityType enum values
                             url: z.url().optional(), // For streaming activities
                         })
+                    )
+                    .refine(
+                        (activities) => {
+                            // Streaming activities (type === 1) must have a URL
+                            return activities.every(
+                                (activity) => activity.type !== 1 || (activity.url && activity.url.length > 0)
+                            );
+                        },
+                        {
+                            message: 'streaming activities must include a url',
+                        }
                     )
                     .optional(),
             })
@@ -109,6 +114,7 @@ export const DiscordClientOptionsSchema = z
             .optional(),
     })
     .default({
+        intents: [],
         closeTimeout: 5000,
         waitGuildTimeout: 15000,
         failIfNotExists: true,

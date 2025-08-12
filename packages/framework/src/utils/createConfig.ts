@@ -96,7 +96,7 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     };
 
     // Deep merge base config with overrides
-    const mergedConfig = overrides ? deepMerge(baseConfig, overrides as typeof baseConfig) : baseConfig;
+    const mergedConfig = overrides ? deepMerge(baseConfig, overrides as Partial<typeof baseConfig>) : baseConfig;
 
     try {
         const parsedConfig = MergedSchema.parse(mergedConfig);

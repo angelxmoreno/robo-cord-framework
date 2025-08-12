@@ -23,12 +23,12 @@ export function deepMerge<T extends Record<string, unknown>>(target: T, source: 
         const targetValue = result[key];
 
         if (isPlainObject(sourceValue) && isPlainObject(targetValue)) {
-            result[key] = deepMerge(
+            (result as Record<string, unknown>)[key] = deepMerge(
                 targetValue as Record<string, unknown>,
                 sourceValue as Record<string, unknown>
-            ) as T[Extract<keyof T, string>];
+            );
         } else if (sourceValue !== undefined) {
-            result[key] = sourceValue as T[Extract<keyof T, string>];
+            (result as Record<string, unknown>)[key] = sourceValue;
         }
     }
 
