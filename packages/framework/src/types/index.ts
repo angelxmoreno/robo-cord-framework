@@ -6,6 +6,7 @@ import type {
     LoggerOptionsSchema,
     PathsConfigSchema,
 } from '../schemas';
+import type { DiscordClientOptionsSchema } from '../schemas/DiscordClientOptionsSchema';
 
 /**
  * Type for Discord bot configuration settings.
@@ -44,3 +45,5 @@ export type ExtendedConfig<T extends Record<string, unknown> = Record<string, un
  * Represents classes that can be instantiated with the new operator.
  */
 export type ClassConstructor = new (...args: unknown[]) => unknown;
+
+export type DiscordClientOptions = z.infer<typeof DiscordClientOptionsSchema>;

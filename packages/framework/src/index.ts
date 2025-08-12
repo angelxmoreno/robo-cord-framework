@@ -1,3 +1,4 @@
+export * from './base';
 export * from './database/data-source';
 export * from './entities';
 export * from './schemas';

@@ -73,6 +73,13 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
             ...(process.env.DISCORD_TOKEN && { token: process.env.DISCORD_TOKEN }),
             ...(process.env.DISCORD_CLIENT_ID && { clientId: process.env.DISCORD_CLIENT_ID }),
             ...(process.env.DISCORD_GUILD_ID && { guildId: process.env.DISCORD_GUILD_ID }),
+            clientOptions: {
+                intents: [],
+                closeTimeout: 5000,
+                waitGuildTimeout: 15000,
+                failIfNotExists: true,
+                enforceNonce: false,
+            },
         },
         database: {
             ...(process.env.DB_HOST && { host: process.env.DB_HOST }),
@@ -89,7 +96,7 @@ export function createConfig<T extends z.ZodObject<z.ZodRawShape>>(
     };
 
     // Deep merge base config with overrides
-    const mergedConfig = overrides ? deepMerge(baseConfig, overrides) : baseConfig;
+    const mergedConfig = overrides ? deepMerge(baseConfig, overrides as typeof baseConfig) : baseConfig;
 
     try {
         const parsedConfig = MergedSchema.parse(mergedConfig);
