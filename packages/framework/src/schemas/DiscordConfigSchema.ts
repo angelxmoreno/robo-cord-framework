@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DiscordClientOptionsSchema } from './DiscordClientOptionsSchema';
 
 /**
  * Configuration schema for Discord bot settings.
@@ -16,4 +17,5 @@ export const DiscordConfigSchema = z.object({
         .trim()
         .regex(/^\d{17,20}$/, 'Guild ID must be a valid Discord snowflake')
         .optional(), // For guild-specific development
+    clientOptions: DiscordClientOptionsSchema,
 });

@@ -123,6 +123,13 @@ describe('createConfig', () => {
             ollamaUrl: 'http://custom:8080',
             discord: {
                 token: 'override_token',
+                clientOptions: {
+                    intents: ['Guilds'],
+                    closeTimeout: 5000,
+                    waitGuildTimeout: 15000,
+                    failIfNotExists: true,
+                    enforceNonce: false,
+                },
             },
             database: {
                 host: 'override_host',

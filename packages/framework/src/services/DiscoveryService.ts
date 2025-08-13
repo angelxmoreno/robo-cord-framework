@@ -1,6 +1,7 @@
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Logger } from 'pino';
+import { BaseEventHandler, BaseSlashCommand } from '../base';
 import type { BaseConfig, ClassConstructor } from '../types';
 
 type DiscoveryServiceOptions = {
@@ -49,9 +50,20 @@ export class DiscoveryService {
 
     /**
      * Validates if an exported item is a valid command class.
+     * Commands must extend BaseSlashCommand and have names ending with 'Command'.
      */
     protected isValidCommand(exportedItem: unknown): exportedItem is ClassConstructor {
-        return typeof exportedItem === 'function' && exportedItem.prototype && exportedItem.name.endsWith('Command');
+        if (typeof exportedItem !== 'function' || !exportedItem.prototype) {
+            return false;
+        }
+
+        // Check if the class name follows convention
+        if (!exportedItem.name.endsWith('Command')) {
+            return false;
+        }
+
+        // Check if it extends BaseSlashCommand
+        return Object.prototype.isPrototypeOf.call(BaseSlashCommand.prototype, exportedItem.prototype);
     }
 
     /**
@@ -62,10 +74,21 @@ export class DiscoveryService {
     }
 
     /**
-     * Validates if an exported item is a valid event class.
+     * Validates if an exported item is a valid event handler class.
+     * Event handlers must extend BaseEventHandler and have names ending with 'Event'.
      */
     protected isValidEvent(exportedItem: unknown): exportedItem is ClassConstructor {
-        return typeof exportedItem === 'function' && exportedItem.prototype && exportedItem.name.endsWith('Event');
+        if (typeof exportedItem !== 'function' || !exportedItem.prototype) {
+            return false;
+        }
+
+        // Check if the class name follows convention
+        if (!exportedItem.name.endsWith('Event')) {
+            return false;
+        }
+
+        // Check if it extends BaseEventHandler
+        return Object.prototype.isPrototypeOf.call(BaseEventHandler.prototype, exportedItem.prototype);
     }
 
     /**

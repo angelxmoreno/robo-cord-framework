@@ -26,6 +26,10 @@
         "prebuild": "rimraf dist",
         "build": "tsc --project tsconfig.build.json"
     },
+    "engines": {
+        "node": ">=18.17.0",
+        "bun": ">=1.0.0"
+    },
     "dependencies": {
         "dotenv": "^17.2.0",
         "pg": "^8.16.3",
@@ -38,10 +42,12 @@
     },
     "devDependencies": {
         "@types/bun": "^1.2.0",
+        "discord.js": "^14.21.0",
         "rimraf": "^6.0.0",
         "tsc-alias": "^1.8.0"
     },
     "peerDependencies": {
+        "discord.js": "^14.21.0",
         "typescript": "^5"
     }
 }

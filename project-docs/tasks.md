@@ -122,7 +122,7 @@
 **Dependencies: Task 4**  
 **Estimated Time: 3-4 hours**
 
-- [ ] Create `SlashCommand.ts` base class in framework
+- [ ] Create `BaseSlashCommand.ts` base class in framework
 - [ ] Create `BaseEvent.ts` for Discord event handling in framework
 - [ ] Create `BaseJob.ts` base class in framework
 - [ ] Create `BaseMiddleware.ts` interface in framework
@@ -130,7 +130,7 @@
 - [ ] Test base classes with example implementations
 
 **Files to create:**
-- `packages/framework/src/base/SlashCommand.ts`
+- `packages/framework/src/base/BaseSlashCommand.ts`
 - `packages/framework/src/base/BaseEvent.ts`
 - `packages/framework/src/base/BaseJob.ts`
 - `packages/framework/src/base/BaseMiddleware.ts`
